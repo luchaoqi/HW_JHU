@@ -1,0 +1,104 @@
+---
+title: "Lecture 7 in Biostatistics 651-652 at JHU Bloomberg School of Public Health"
+author: "Ciprian M. Crainiceanu"
+date: "Monday, August 08, 2016"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>. RStudio is the recommended software for using the document.  
+
+This document is used together with the Lectures notes for Lecture 7 in the Biostatistics 651-652 series. The idea is to learn how to produce reproducible Biostatistical documents where text, data, and results are interweaved. R is taught by reading and understanding these documents, but learning R requires much additional individual effort.
+
+*The Binomial distribution in R*
+
+Recall that the binomial distribution characterizes the random variable "number of successes out of $n$ independent trials with the same success probability $p$". The distribution is denoted by ${\rm Binomial}(n,p)$, is discrete and takes values $k=0,\ldots,n$ with the pmf equal to
+$$P(X=k)={{n}\choose{k}} p^k(1-p)^{n-k}=\frac{n!}{k!(n-k)!}p^k(1-p)^{n-k},$$
+where $n\choose k$ is the number of ways of choosing $k$ elements, disregarding their order, from a set of $n$ elements.
+
+Note that if $X_1,\ldots,X_n$ are n-Bernoulli random variables with success probability $p$ then $X=\sum_{k=1}^nX_k\sim{\rm Binomial}(n,p)$. This is particularly useful when we will talk about the Central limit theorem. Moreover, this implies that if $X\sim {\rm Binomial}(n_X,p)$ and $Y\sim {\rm Binomial}(n_Y,p)$ are independent random variables then $X+Y\sim \sim {\rm Binomial}(n_X+n_Y,p)$.
+
+```{r}
+#Simulate 15 independent Binomial(10,.2)
+rbinom(15,size=10,prob=0.2)
+#Simulate 15 independent Binomial(10,p), first p=0.1, last p=0.9
+rbinom(15,size=10,prob=seq(0.1,0.9,length=15))
+#Simulate 15 independent Binomial(n,p), first (n,p)=(1,0.1), last (n,p)=(15,0.9)
+rbinom(15,size=1:15,prob=seq(0.1,0.9,length=15))
+```     
+
+Consider the example in Lecture 7 of a friend who has 8 children, 7 of which are girls and
+none are twins. We assume that the probability of having a girl at a given birth is $50$\% and that births are independent (conditional on the probability of giving birth to a girl).  Note that the random variable $X$ "number of girl births out of $8$ births" can be assumed to follow a ${\rm Binomial}(8,0.5)$ distribution. The probability of getting $7$ or more girls out of 8 births is
+
+$$P(X\geq 7)=P(X=7)+P(X=8)={8\choose 7}0.5^7(1-0.5)^1+{8\choose 8}0.5^8(1-0.5)^0\approx 0.035.$$
+
+Thus, the probability of getting $7$ or more girls out of $8$ births is quite small if we assume that the probability of having a girl is $0.5$ for this couple. This is called the p-value. Another way of interpreting the number is that among couples who have $8$ children and an equal probability of getting boys and girls approximately $4$\% of these couples will have at least 7 girls. One could say that this is uncommon. Using `R` the same probability can be calculated using direct calculations or the pmf function `pbinom` 
+
+```{r}
+round(8*0.5^7*(1-0.5)^1+0.5^8*(1-0.5)^0,digits=4)
+round(pbinom(6, 8, 0.5, lower.tail = FALSE),digits=4)
+```
+
+If $p$ is considered to be unknown then the likelihood of the data for having $7$ girls out of $8$ births is
+
+$$L(p|x)={8\choose 7}p^7(1-p)^1,$$
+
+where, once again, the likelihood function depends on the parameter(s) of the distribution. We would like to produce a plot of the normalized likelihood as a function of the probability $p$ of getting a girl at one birth. We will do this in `R`
+
+```{r}
+p=seq(0,1,length=101)                                     #Set an equally spaced probability grid between 0 and 1
+like=8*p^7*(1-p)                                          #Calculate the probability and then plot
+plot(p,like/max(like),type="l",col="blue",lwd=3,xlab="probability",ylab="likelihood",cex.lab=1.5,cex.axis=1.5,col.axis="blue")
+lines(p,rep(0.05,101),col="red",lwd=3)
+lines(p,rep(0.1,101),col="orange",lwd=3)
+legend(0,1,c("Likelihood","Threshold = .10","Threshold = .05"),lwd=c(3,3,3),col=c("blue","orange","red"))
+```
+
+*The Normal distribution in R*
+
+A random variable $X$ has a **normal** or **Gaussian** distribution with mean $\mu$ and variance $\sigma^2$ if the pdf of its distribution has the form
+$$f(x|\mu,\sigma^2)=\frac{1}{\sqrt{2\pi\sigma^2}}\exp{\left\{-\frac{(x-\mu)^2}{2\sigma^2}\right\}}.$$
+
+It is relatively easy to show (this is a good exercise) that if $Z\sim N(0,1)$ (standard Normal or Gaussian variable) then $X=\mu+\sigma Z\sim N(\mu,\sigma^2)$. To prove this calculate the cdf of $X$ (denoted as $F_X$) as a cdf of $Z$ (denoted as $F_Z$) and take the derivatives to obtain the pdf of $X$, $f_X$, as a function of the pdf of $Z$, $f_Z$. More precisely for every $t$
+$$F_X(t)=P(X\leq t)=P(\mu+\sigma Z\leq t)=P(Z\leq \frac{t-\mu}{\sigma})=F_Z\left(\frac{t-\mu}{\sigma}\right).$$
+
+Taking the derivarives with respect to $t$ and using the chain rule we obtain
+$$F_X'(t)=\frac{1}{\sigma}F_Z'\left(\frac{t-\mu}{\sigma}\right)\implies f_X(t)=\frac{1}{\sigma}f_Z\left(\frac{t-\mu}{\sigma}\right).$$ By simply substituting this into the pdf of $Z$ we obtain the result. This approach is very general if we are interested in obtaining the pdf of a transformation of a random variable with known pdf. Try to obtain the pdf of $Z^2$ if $Z\sim N(0,1)$ (this is called the $\chi$^2 distribution and will be used later on in the class). Also, if $U\sim {\rm Uniform}(0,1)$ calculate the pdf of $1+2U^3$.
+
+Show that $E[Z]=0$ and ${\rm Var}[Z]=1$ and using this result show that $E[X]=\mu$ and ${\rm Var}[X]=\sigma^2$. Thus, the probability of being less than $k$-sigma away from the mean of a $N(\mu,\sigma^2)$ random variable is equal to $$P(\mu-k\sigma\leq X \leq \mu+k\sigma)=P(-k\leq\frac{X-\mu}{\sigma}\leq k)=P(-k\leq W \leq k),$$ which is equal to the probability that a standard Normal random variable, $Z$, is less than $k$ away from $0$. Below we provide a few such calculations (note that we do not need to keep books with Normal distribution tables) 
+
+```{r}
+#Probability of at least 1 standard deviation away from the mean
+round(pnorm(1)-pnorm(-1),digits=3)
+#Probability of at least 2 standard deviations away from the mean
+round(pnorm(2)-pnorm(-2),digits=3)
+#Probability of at least 3 standard deviations away from the mean
+round(pnorm(3)-pnorm(-3),digits=3)
+```
+
+*The Bivariate likelihood of a Normal distribution*
+
+Recall that the Normal distribution depends on two parameters, the mean $\mu$ and the variance $\sigma^2$. The likelihood for an independent sample $x=(x_1,\ldots,x_n)$ from a $N(\mu,\sigma^2)$ distribution is
+$$L(\mu,\sigma^2|x)=\frac{1}{(2\pi\sigma^2)^{n/2}}\exp\left\{-\frac{\sum_{i=1}^n(x_i-\mu)^2}{2\sigma^2}\right\},$$
+which is a function of both $\mu$ and $\sigma^2$. Below we will plot the normalized bivariate likelihood for a random sample of $10$ independent $N(3,4)$ random variable (note that the parameterization of the Normal in `R` is done relative to the standard deviation $\sigma$ and not the variance $\sigma^2$.)
+
+# ```{r,warning=FALSE,message=FALSE}
+# #Plot the bivariate likelihood for a normal
+# n=10                                             #Set the sample size for the data
+# x=rnorm(n,3,2)                                   #Simulate n independent N(3,4) rvs (these are the data)
+# mu=seq(0,5,length=100)                           #Set up a grid for the mean and standard deviation
+# sigma=seq(0.1,5,length=100)
+# like=matrix(rep(0,10000),ncol=100)               #Set the 100 by 100 matrix that will store the likelihood
+# #Building a 3D plot of a distribution
+# for (i in 1:100)                                 #Calculate the likelihood
+#   {for (j in 1:100){like[i,j]=exp(-sum((x-mu[i])^2)/(2*sigma[j]^2)-n*log(sigma[j]))}}
+# 
+# like=like/max(like)                              #Normalize the likelihood
+# 
+# library(fields)
+# image.plot(mu,sigma,like,xlab=expression(mu),ylab=expression(sigma),cex.lab=1.5,cex.axis=1.5)
+# persp(mu, sigma, like, theta = 30, phi = 30, col = c("green3"),ltheta = 120, shade = 0.9, expand="0.75",xlab=expression(mu),ylab=expression(sigma),zlab="likelihood", ticktype = "detailed",border=NA)
+# ```
+
+Note that the likelihoods are not symmetric around the MLE. Try to obtain the MLE from the numerical form of the likelihood. Plot that true value and the MLEs calculated using numerical approximations and the formulas learned in class. To obtain some of the plots in Lecture 7 you may want to vary $n$. Note that you do not obtain the same exact plot every time you run the experiment. What do you conclude?

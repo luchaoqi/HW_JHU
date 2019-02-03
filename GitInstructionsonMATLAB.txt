@@ -1,0 +1,9 @@
+To pull files from repo, type 
+!git pull
+into command window
+
+To update files, type
+
+!git add fi!lename.xyz  --- write this if there is a new file to add
+!git commit -m "add commit message"
+!git push

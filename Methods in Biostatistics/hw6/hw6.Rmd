@@ -1,0 +1,527 @@
+---
+title: "hw6"
+author: "LuchaoQi"
+date: "November 27, 2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+### Problem 1  
+<!-- We have table shown below: -->
+<!-- ![image1](C:\Users\lcqi\OneDrive\Desktop\1.png) -->
+<!-- The square of Z statistic is: -->
+<!-- ![image2](C:\Users\lcqi\OneDrive\Desktop\2.png) -->
+<!-- ![image3](C:\Users\lcqi\OneDrive\Desktop\3.png) -->
+<!-- The $\chi^2$ statistic is: -->
+<!-- ![image4](C:\Users\lcqi\OneDrive\Desktop\4.png) -->
+<!-- So we have: -->
+<!-- ![image5](C:\Users\lcqi\OneDrive\Desktop\5.png) -->
+
+### Problem 2  
+a.    
+Null: $H_0 : \hat{RD} = \hat{p1} - \hat{p2} = 0$  
+Alternative: $H_A : \hat{p1} - \hat{p2} \neq0$  
+${\hat{SE}}_{\hat{RD}}=\sqrt{\frac{\hat{p1}(1-\hat{p1})}{n_1}+\frac{\hat{p2}(1-\hat{p2})}{n_2}}$  
+```{r}
+x=2/15
+y=4/19
+p=60/340
+z=(y-x)/sqrt(p*(1-p)*(1/150+1/190))
+2*(1-pnorm(z))
+```
+We could see p-value = 0.06375422<0.05, so we reject null and conclude that the two proportions are not equal.  
+b.  
+For absolute change:   
+$H_0 : \hat{RD} = \hat{p1} - \hat{p2} = 0$  
+$H_A : \hat{p1} - \hat{p2} \neq0$  
+CI =[-0.155191935  0.004424391]
+```{r}
+x=21/152
+y=41/192
+(x-y)+c(-1,1)*qnorm(0.975)*sqrt(x*(1-x)/152+y*(1-y)/192)
+```  
+For relative risk: we use log-transformation     
+$H_0 : log(\hat{RR}) = log(\frac{\hat{p1}}{\hat{p2}}) = 0$  
+$H_A : log(\hat{RR}) = log(\frac{\hat{p1}}{\hat{p2}}) \neq 0$    
+Interval for logRR = [-2.416758  1.503242]  
+Exponentiate it and we got CI = [0.3871324 1.0361082]
+```{r}
+x=20/150
+y=40/190
+se=sqrt((1-x)/(x*150)+(1-y)/(y*190))
+log=log(x/y)+c(-1,1)*1.96*se
+exp(log)
+```  
+For odds ratio:  
+CI = [0.3211208 1.0364953]
+```{r}
+n11=20
+n12=130
+n21=40
+n22=150
+n=(n11*n22)/(n12*n21)
+se=sqrt(1/n11+1/n12+1/n21+1/n22)
+log=log(n)+c(-1,1)*se*qnorm(0.975)
+exp(log)
+```    
+  
+c.  
+  
+Bayesian credible intervals:  
+```{r}
+x1 = 20; n1 = 150
+x2 = 40; n2 = 190
+alpha1 = 1; beta1 = 1
+alpha2 = 1; beta2 = 1
+p1 = rbeta(1000,x1+alpha1, n1-x1+beta1)
+p2 = rbeta(1000,x2+alpha2, n2-x2+beta2)
+```
+For RD:
+```{r}
+rd = p1-p2
+quantile(rd,c(.025,.975))
+plot(density(rd))
+```
+For RR:
+```{r}
+rr = p1/p2
+quantile(rr,c(0.025,0.975))
+plot(density(rr))
+```
+For OR:
+```{r}
+or = p1/(1-p1)/(p2/(1-p2))
+quantile(or,c(0.025,0.975))
+plot(density(or))
+```
+
+### Problem 3  
+95% CI =  
+$$[log(\frac{x}{n})-1.96*\sqrt{\frac{1}{x}-\frac{1}{n}},log(\frac{x}{n})+1.96*\sqrt{\frac{1}{x}-\frac{1}{n}}]$$
+
+### problem 4  
+a.  
+${\frac{\hat{p}-p}{\hat{SE}_\hat{p}}}\to N(0,1)$  
+${\frac{\sqrt{\hat{p}}-\sqrt{p}}{\frac{1}{2\sqrt{\hat{p}}}\hat{SE}_\hat{p}} }\to N(0,1)$  
+So standard error for $\sqrt{\hat{p}}$ is $\sqrt{\frac{1-\hat{p}}{4n}}$  
+b.  
+Simulation:
+```{r}
+x=rep(0,length=1000)
+for (i in 1:1000){
+x[i]=(sqrt(mean(rbinom(200,1,0.5)))-sqrt(0.5))/((1-sqrt(mean(rbinom(200,1,0.5))))/4)
+}
+hist(x)
+```
+
+### Problem 5
+For $p1 = .1; p2 = .1; n1 = 100; n2 = 100$ :
+```{r}
+p1 = .1; p2 = .1; n1 = 100; n2 = 100 
+p = log(p1*(1-p2)/((p2)*(1-p1)))
+x=rbinom(1000,n1,p1)
+y=rbinom(1000,n2,p2)
+z=cbind(x,y)
+OR = apply(z, 1, function(x) x[1] * (n2 - x[2]) / (x[2] * (n1 - x[1])) )
+SELOGOR = apply(z, 1, function(x) sqrt(1 / x[1] + 1 / (n1 - x[1]) + 1 / x[2] + 1 / (n2 - x[2]) ) )
+INTERVAL = cbind(log(OR)-1.96*SELOGOR,log(OR)+1.96*SELOGOR)
+s=0
+for (i in 1:1000) {
+  if (p>=INTERVAL[i,1] & p<=INTERVAL[i,2]){
+    s= s+1
+  }
+}
+s/1000
+```
+For $p1 = .1; p2 = .5; n1 = 100; n2 = 100$:
+```{r}
+p1 = .1; p2 = .5; n1 = 100; n2 = 100
+p = log(p1*(1-p2)/((p2)*(1-p1)))
+x=rbinom(1000,n1,p1)
+y=rbinom(1000,n2,p2)
+z=cbind(x,y)
+OR = apply(z, 1, function(x) x[1] * (n2 - x[2]) / (x[2] * (n1 - x[1])) )
+SELOGOR = apply(z, 1, function(x) sqrt(1 / x[1] + 1 / (n1 - x[1]) + 1 / x[2] + 1 / (n2 - x[2]) ) )
+INTERVAL = cbind(log(OR)-1.96*SELOGOR,log(OR)+1.96*SELOGOR)
+s=0
+for (i in 1:1000) {
+  if (p>=INTERVAL[i,1] & p<=INTERVAL[i,2]){
+    s= s+1
+  }
+}
+s/1000
+```
+For $p1 = .1; p2 = .9; n1 = 100; n2 = 100$:
+```{r}
+p1 = .1; p2 = .9; n1 = 100; n2 = 100
+p = log(p1*(1-p2)/((p2)*(1-p1)))
+x=rbinom(1000,n1,p1)
+y=rbinom(1000,n2,p2)
+z=cbind(x,y)
+OR = apply(z, 1, function(x) x[1] * (n2 - x[2]) / (x[2] * (n1 - x[1])) )
+SELOGOR = apply(z, 1, function(x) sqrt(1 / x[1] + 1 / (n1 - x[1]) + 1 / x[2] + 1 / (n2 - x[2]) ) )
+INTERVAL = cbind(log(OR)-1.96*SELOGOR,log(OR)+1.96*SELOGOR)
+s=0
+for (i in 1:1000) {
+  if (p>=INTERVAL[i,1] & p<=INTERVAL[i,2]){
+    s= s+1
+  }
+}
+s/1000
+```
+For $p1 = .5; p2 = .5; n1 = 100; n2 = 100$:
+```{r}
+p1 = .5; p2 = .5; n1 = 100; n2 = 100
+p = log(p1*(1-p2)/((p2)*(1-p1)))
+x=rbinom(1000,n1,p1)
+y=rbinom(1000,n2,p2)
+z=cbind(x,y)
+OR = apply(z, 1, function(x) x[1] * (n2 - x[2]) / (x[2] * (n1 - x[1])) )
+SELOGOR = apply(z, 1, function(x) sqrt(1 / x[1] + 1 / (n1 - x[1]) + 1 / x[2] + 1 / (n2 - x[2]) ) )
+INTERVAL = cbind(log(OR)-1.96*SELOGOR,log(OR)+1.96*SELOGOR)
+s=0
+for (i in 1:1000) {
+  if (p>=INTERVAL[i,1] & p<=INTERVAL[i,2]){
+    s= s+1
+  }
+}
+s/1000
+```
+For $p1 = .5; p2 = .9; n1 = 100; n2 = 100$:
+```{r}
+p1 = .5; p2 = .9; n1 = 100; n2 = 100
+p = log(p1*(1-p2)/((p2)*(1-p1)))
+x=rbinom(1000,n1,p1)
+y=rbinom(1000,n2,p2)
+z=cbind(x,y)
+OR = apply(z, 1, function(x) x[1] * (n2 - x[2]) / (x[2] * (n1 - x[1])) )
+SELOGOR = apply(z, 1, function(x) sqrt(1 / x[1] + 1 / (n1 - x[1]) + 1 / x[2] + 1 / (n2 - x[2]) ) )
+INTERVAL = cbind(log(OR)-1.96*SELOGOR,log(OR)+1.96*SELOGOR)
+s=0
+for (i in 1:1000) {
+  if (p>=INTERVAL[i,1] & p<=INTERVAL[i,2]){
+    s= s+1
+  }
+}
+s/1000
+```
+For $p1 = .9; p2 = .9; n1 = 100; n2 = 100$:
+```{r}
+p1 = .9; p2 = .9; n1 = 100; n2 = 100
+p = log(p1*(1-p2)/((p2)*(1-p1)))
+x=rbinom(1000,n1,p1)
+y=rbinom(1000,n2,p2)
+z=cbind(x,y)
+OR = apply(z, 1, function(x) x[1] * (n2 - x[2]) / (x[2] * (n1 - x[1])) )
+SELOGOR = apply(z, 1, function(x) sqrt(1 / x[1] + 1 / (n1 - x[1]) + 1 / x[2] + 1 / (n2 - x[2]) ) )
+INTERVAL = cbind(log(OR)-1.96*SELOGOR,log(OR)+1.96*SELOGOR)
+s=0
+for (i in 1:1000) {
+  if (p>=INTERVAL[i,1] & p<=INTERVAL[i,2]){
+    s= s+1
+  }
+}
+s/1000
+```
+Summary: There's no big difference in intervals' performance
+
+### Problem 6  
+
+For $p1 = .1; p2 = .1; n1 = 100; n2 = 100$:  
+```{r}
+p1 = .1; p2 = .1; n1 = 100; n2 = 100
+p = log(p1/p2)
+x=rbinom(1000,n1,p1)
+y=rbinom(1000,n2,p2)
+z=cbind(x,y)
+RR = apply(z, 1,
+function(x) (x[1] / n1) / (x[2] / n2))
+SELOGRR = apply(z, 1,
+function(x) {
+phat1 <- x[1] / n1
+phat2 <- x[2] / n2
+sqrt((1 - phat1) / phat1 / n1 + (1 - phat2) / phat2 / n2)
+})
+INTERVAL = cbind(log(OR)-1.96*SELOGOR,log(OR)+1.96*SELOGOR)
+s=0
+for (i in 1:1000) {
+  if (p>= INTERVAL[i,1] & p<=INTERVAL[i,2]){
+    s= s+1
+  }
+}
+s/1000
+```
+
+For $p1 = .1; p2 = .5; n1 = 100; n2 = 100$
+```{r}
+p1 = .1; p2 = .5; n1 = 100; n2 = 100
+p = log(p1/p2)
+x=rbinom(1000,n1,p1)
+y=rbinom(1000,n2,p2)
+z=cbind(x,y)
+RR = apply(z, 1,
+function(x) (x[1] / n1) / (x[2] / n2))
+SELOGRR = apply(z, 1,
+function(x) {
+phat1 <- x[1] / n1
+phat2 <- x[2] / n2
+sqrt((1 - phat1) / phat1 / n1 + (1 - phat2) / phat2 / n2)
+})
+INTERVAL = cbind(log(RR)-1.96*SELOGRR,log(RR)+1.96*SELOGRR)
+s=0
+for (i in 1:1000) {
+  if (p>= INTERVAL[i,1] & p<=INTERVAL[i,2]){
+    s= s+1
+  }
+}
+s/1000
+```
+
+For $p1 = .1; p2 = .9; n1 = 100; n2 = 100$
+```{r}
+p1 = .1; p2 = .9; n1 = 100; n2 = 100
+p = log(p1/p2)
+x=rbinom(1000,n1,p1)
+y=rbinom(1000,n2,p2)
+z=cbind(x,y)
+RR = apply(z, 1,
+function(x) (x[1] / n1) / (x[2] / n2))
+SELOGRR = apply(z, 1,
+function(x) {
+phat1 <- x[1] / n1
+phat2 <- x[2] / n2
+sqrt((1 - phat1) / phat1 / n1 + (1 - phat2) / phat2 / n2)
+})
+INTERVAL = cbind(log(RR)-1.96*SELOGRR,log(RR)+1.96*SELOGRR)
+s=0
+for (i in 1:1000) {
+  if (p>= INTERVAL[i,1] & p<=INTERVAL[i,2]){
+    s= s+1
+  }
+}
+s/1000
+```
+
+For $p1 = .5; p2 = .5; n1 = 100; n2 = 100$
+```{r}
+p1 = .5; p2 = .5; n1 = 100; n2 = 100
+p = log(p1/p2)
+x=rbinom(1000,n1,p1)
+y=rbinom(1000,n2,p2)
+z=cbind(x,y)
+RR = apply(z, 1,
+function(x) (x[1] / n1) / (x[2] / n2))
+SELOGRR = apply(z, 1,
+function(x) {
+phat1 <- x[1] / n1
+phat2 <- x[2] / n2
+sqrt((1 - phat1) / phat1 / n1 + (1 - phat2) / phat2 / n2)
+})
+INTERVAL = cbind(log(RR)-1.96*SELOGRR,log(RR)+1.96*SELOGRR)
+s=0
+for (i in 1:1000) {
+  if (p>= INTERVAL[i,1] & p<=INTERVAL[i,2]){
+    s= s+1
+  }
+}
+s/1000
+```
+
+For $p1 = .5; p2 = .9; n1 = 100; n2 = 100$
+```{r}
+p1 = .5; p2 = .9; n1 = 100; n2 = 100
+p = log(p1/p2)
+x=rbinom(1000,n1,p1)
+y=rbinom(1000,n2,p2)
+z=cbind(x,y)
+RR = apply(z, 1,
+function(x) (x[1] / n1) / (x[2] / n2))
+SELOGRR = apply(z, 1,
+function(x) {
+phat1 <- x[1] / n1
+phat2 <- x[2] / n2
+sqrt((1 - phat1) / phat1 / n1 + (1 - phat2) / phat2 / n2)
+})
+INTERVAL = cbind(log(RR)-1.96*SELOGRR,log(RR)+1.96*SELOGRR)
+s=0
+for (i in 1:1000) {
+  if (p>= INTERVAL[i,1] & p<=INTERVAL[i,2]){
+    s= s+1
+  }
+}
+s/1000
+```
+
+For $p1 = .9; p2 = .9; n1 = 100; n2 = 100$
+```{r}
+p1 = .9; p2 = .9; n1 = 100; n2 = 100
+p = log(p1/p2)
+x=rbinom(1000,n1,p1)
+y=rbinom(1000,n2,p2)
+z=cbind(x,y)
+RR = apply(z, 1,
+function(x) (x[1] / n1) / (x[2] / n2))
+SELOGRR = apply(z, 1,
+function(x) {
+phat1 <- x[1] / n1
+phat2 <- x[2] / n2
+sqrt((1 - phat1) / phat1 / n1 + (1 - phat2) / phat2 / n2)
+})
+INTERVAL = cbind(log(RR)-1.96*SELOGRR,log(RR)+1.96*SELOGRR)
+s=0
+for (i in 1:1000) {
+  if (p>= INTERVAL[i,1] & p<=INTERVAL[i,2]){
+    s= s+1
+  }
+}
+s/1000
+```
+  
+Summary: There's no big difference in intervals' performance
+
+### Problem 7  
+a.  
+The 95% CI of the odds ratio is [2.055483 10.624095]  
+```{r}
+n11=243
+n12=259-243
+n21=39
+n22=51-39
+OR = n11*n22/(n21*n12)
+SE = sqrt(1/n11+1/n12+1/n21+1/n22)
+INTERVAL = exp(c(log(OR)-1.96*SE,log(OR)+1.96*SE))
+OR
+INTERVAL
+```
+b.  
+The 95% CI of the relative risk is [1.050307 1.433203]  
+```{r}
+n1=259
+n2=51
+p1=243/259
+p2=39/51
+RR=p1/p2
+SE = sqrt((1-p1)/(p1*n1)+(1-p2)/(p2*n2))
+INTERVAL = exp(c(log(RR)-1.96*SE,log(RR)+1.96*SE))
+RR
+INTERVAL
+```
+c.  
+The 95% CI of the risk difference is [0.05346365 0.29357246]  
+```{r}
+n1=259
+n2=51
+p1=243/259
+p2=39/51
+RD=p1 - p2
+SE = sqrt(p1*(1-p1)/n1+p2*(1-p2)/n2)
+INTERVAL=c(RD-1.96*SE,RD+1.96*SE)
+RD
+INTERVAL
+```
+d.  
+$H_0 : p1 = p2$  
+$H_A : p1\neq p2$  
+p-value = 7.767783e-05 < 0.05, so we reject the null and conclude that $p1\neq p2$  
+```{r}
+O11=243;E11=282/310*259
+O21=39;E21=282/310*51
+O12=16;E12=28/310*259
+O22=12;E22=28/310*51
+TS = sum((O11-E11)^2/E11,(O12-E12)^2/E12,(O21-E21)^2/E21,(O22-E22)^2/E22)
+pchisq(TS,1,lower.tail = FALSE)
+```
+Or we could use following codes:  
+```{r}
+dat = matrix(c(243,16,39,12),2)
+chisq.test(dat, correct = FALSE)
+```
+
+### Problem 8  
+95% CI of the odds ratio is [3.649598 10.925327]
+```{r}
+n11=50;n12=61
+n21=27;n22=208
+OR = n11*n22/(n12*n21)
+SE = sqrt(1/n11+1/n12+1/n21+1/n22)
+exp(c(log(OR)-1.96*SE,log(OR)+1.96*SE))
+```
+
+### Problem 9  
+$H_0 : p1 = p2$  
+$H_A : p1\neq p2$  
+p-value = 2.777e-08 < 0.05, so we reject the null meaning we fail to prove the treatment is effective
+```{r}
+dat = matrix(c(50,10,20,40),2)
+chisq.test(dat, correct = FALSE)
+```
+
+### Problem 10  
+95% CI = $$[log(\frac{\hat{p}}{1-\hat{p}})-1.96\frac{1}{\hat{p}(1-\hat{p})}\sqrt{\hat{p}(1-\hat{p})/n},log(\frac{\hat{p}}{1-\hat{p}})+1.96\frac{1}{\hat{p}(1-\hat{p})}\sqrt{\hat{p}(1-\hat{p})/n}]$$
+
+### Problem 11  
+95% CI = $$[
+log(\frac{\hat{p1}}{1-\hat{p1}})-log(\frac{\hat{p2}}{1-\hat{p2}})-\frac{1.96}{(\frac{1}{\hat{p1}(1-\hat{p1})}-\frac{1}{\hat{p2}(1-\hat{p2})})}(\sqrt{\hat{p1}(1-\hat{p1})/n}+\sqrt{\hat{p2}(1-\hat{p2})/n}),$$
+$$
+log(\frac{\hat{p1}}{1-\hat{p1}})-log(\frac{\hat{p2}}{1-\hat{p2}})+\frac{1.96}{(\frac{1}{\hat{p1}(1-\hat{p1})}-\frac{1}{\hat{p2}(1-\hat{p2})})}(\sqrt{\hat{p1}(1-\hat{p1})/n}+\sqrt{\hat{p2}(1-\hat{p2})/n})
+]$$  
+
+### Problem 12  
+a.  
+$H_0 : p1 = p2$  
+$H_A : p1 > p2$   
+Using score test:  
+```{r}
+p1=30/40
+p2=10/40
+p=40/80
+TS = (p1-p2)/sqrt(p*(1-p)*(2/40))
+```
+TS = 4.472136 > qnorm(0.95) = 1.644854. So we reject the null, meaning Drug A has a higher probability of side effect than Drug B.  
+
+b.  
+For odds ratio:  
+95% CI = [3.270965 24.763337]
+```{r}
+n11 = 30;n12 = 10; n21= 10; n22= 30
+OR = n11*n22/(n12*n21)
+SE = sqrt(1/n11+1/n12+1/n21+1/n22)
+INTERVAL = exp(c(log(OR)-1.96*SE,log(OR)+1.96*SE))
+INTERVAL
+```
+  
+For relative risk:  
+95% CI = [1.703711 5.282585]
+```{r}
+p1=30/40
+p2=10/40
+RR = p1/p2
+SE = sqrt((1-p1)/(p1*40)+(1-p2)/(p2*40))
+INTERVAL = exp(c(log(RR)-1.96*SE,log(RR)+1.96*SE))
+INTERVAL
+```
+  
+For risk difference:  
+95% CI = [0.3102238 0.6897762]
+```{r}
+p1=30/40
+p2=10/40
+RD=p1-p2
+SE = sqrt(p1*(1-p1)/40+p2*(1-p2)/40)
+INTERVAL = c(RD-1.96*SE,RD+1.96*SE)
+INTERVAL
+```
+
+### Problem 13  
+Using score test:  
+$H_0 : p=0.5$  
+$H_A : p\neq0.5$  
+```{r}
+pbinom(7,10,0.5,lower.tail = FALSE)
+```
+
+p-value = 0.0546875 > 0.05 , so we fail to reject the hypothesis that the coin is fair.
+
+

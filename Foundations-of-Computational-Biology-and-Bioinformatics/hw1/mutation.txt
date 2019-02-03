@@ -1,0 +1,7 @@
+chr     strand  pos     ref     mut     score
+chr3    +       526452  A       C       0.52
+chrX    +       55267   T       C       0.21
+chr1    -       256288  C       G       0.77
+chr21   +       526345  C       A       0.24
+chr12   +       98224   G       T       0.37
+chr5    +       425552  G       A       0.55

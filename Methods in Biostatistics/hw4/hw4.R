@@ -1,0 +1,227 @@
+#4
+x=matrix(rnorm(1000*20,5,sqrt(2)),nrow = 1000)
+m=apply(x,1,mean)
+v=apply(x,1,sd)
+x=(m-5)/(v/sqrt(20))
+y=rt(1000,19)
+qqplot(x,y)
+
+#5
+#sd=sqrt(2) not 2
+x=matrix(rnorm(1000*20,5,sqrt(2)), nrow = 1000)
+y=apply(x,1,var)
+constructedy=y*19/2
+#n=20,sigma^2=2
+randomchi=rchisq(1000,19)
+qqplot(constructedy,randomchi)
+
+
+#7
+A <- c( 44,265,250,153, 88,180, 35,494,249,204,
+        265, 27, 68,230,180,149,286, 72, 39,272)
+B <- c( 44,269,256,154, 83,185, 36,502,249,208,
+        277, 39, 84,228,187,155,290, 80, 50,271)
+plot(c(.5, 2.5), range(A, B), type = "n", 
+     axes = FALSE, xlab = "Location", ylab = "BAL")
+axis(1, c("Leg", "Heart"), at = 1 : 2)
+axis(2)
+## Horizontal lines representing mean values in both groups
+lines(c(.65, .75), rep(mean(A), 2), lwd = 3)
+lines(c(2.25, 2.35), rep(mean(B), 2), lwd = 3)
+## Vertical lines representing mean +/- 2 * standard deviation of the mean
+lines(c(.70, .70), mean(A) + c(-1, 1) * 2 * sd(A) / sqrt(length(A)), 
+      lwd = 3)
+lines(c(2.30, 2.30), mean(B) + c(-1, 1) * 2 * sd(B) / sqrt(length(B)), 
+      lwd = 3)
+for (i in 1 : 20){
+  lines(1 : 2, c(A[i], B[i]), lwd = 1)
+  points(1 : 2, c(A[i], B[i]), pch = 21, bg = "blue", cex = 2)
+}
+
+
+diff <- B - A
+par(mfrow=c(1,2))
+# a stem and leaf plot (Recall Lecture 11 page 9)
+stem(diff)
+## Just plot the UNORDERED points
+## type "n" for no plotting yet 
+plot(diff, 1 : length(diff), type = "n", xlab = "Difference", 
+     ylab = "", axes = FALSE, main = "plot the unordered points")
+axis(1)
+points(diff, 1 : length(diff), pch = 21, bg = "blue", cex = 2)
+
+## Plot the points by their rank
+plot(diff, 1 : length(diff), type = "n", xlab = "Difference", 
+     ylab = "rank", axes = FALSE, main = "plot of points by their rank")
+axis(1)
+axis(2, 1 : length(diff)) 
+abline(v = 0)
+points(sort(diff), 1 : length(diff), pch = 21, bg = "blue", cex = 2)
+
+## Try a histogram
+hist(diff, main = "Histogram of diff values")
+
+## Try a boxplot
+boxplot(diff, main = "Boxplot of diff values")
+
+
+library(ggplot2)
+ggplot(data.frame(diff), aes(x = diff)) +
+  geom_density(stat = "density") + 
+  labs(title = "Kernel density estimate for the difference\nin blood alcohol levels between the heart and the leg")
+
+mu0 <- 0 
+n <- length(diff)
+t_val <- (mean(diff) - mu0) / (sd(diff) / sqrt(n))
+abs(t_val) >= qt(.975, df = n - 1)  
+mean(diff)+c(-1,1)*sd(diff)/sqrt(n)
+
+
+
+## Erase past settings of number of plots in one window to default (=1)
+par(mfrow = c(1,1))
+## Vector of mu values we consider
+muVals <- seq(0, 10, length = 1000)
+## For each element in vector of mu values, compute corresponding 
+## profile likelihood
+likeVals <- sapply(muVals, function(mu) sum((diff - mu)^2) ^ (-n/2))
+## Normalize values 
+likeVals <- likeVals / max(likeVals)
+plot(muVals, likeVals, type = "l", xlab = expression(mu),
+     ylab = "likelihood", frame = FALSE, lwd = 3)
+lines(range(muVals[likeVals>1/8]), c(1/8,1/8), col = "red")
+lines(range(muVals[likeVals>1/16]), c(1/16,1/16), col = "orange", cex = 3)
+abline(v = range(muVals[likeVals>1/8]), col = "red")
+abline(v = range(muVals[likeVals>1/16]), col = "orange")
+
+
+
+sigmaVals <- seq(10, 80, length = 1000)
+likeVals = 1/(sigmaVals^(n/2))*exp(-sum((diff-mean(diff))^2)/2/sigmaVals)
+likeVals = likeVals/max(likeVals)
+plot(sigmaVals, likeVals,
+     type = "l",
+     frame = F,
+     xlab = expression(sigma^2),
+     ylab = "likelihood", lwd = 3)
+lines(range(sigmaVals[likeVals >= 1 / 8]), c(1 / 8, 1 / 8))
+lines(range(sigmaVals[likeVals >= 1 / 16]), c(1 / 16, 1 / 16))
+sigmaVals[which(likeVals == max(likeVals))]
+
+
+#8
+
+x <- c(4,2,4,7,1,5,3,2,2,4,5,2,5,3,1,4,3,1,1,3)
+mean(x) + c(-1,1) * qt(0.975,19)* sd(x) / sqrt(20)
+B <- 1000 
+n <- length(x)
+resamples <- matrix(sample(x, n * B, replace = TRUE), B, n) 
+means <- apply(resamples, 1, mean)
+sd(means) 
+quantile(means, c(.025, .975)) 
+
+
+#9
+x <- c(4,2,4,7,1,5,3,2,2,4,5,2,5,3,1,4,3,1,1,3)
+y <- log(x)
+mean(y) + c(-1,1) * qt(0.975,19)* sd(y) / sqrt(20)
+exp(b)
+
+
+
+#10
+
+n=20
+x=12
+p=seq(0,1,length=101)
+like=choose(n,x)*p^x*(1-p)^(n-x)
+likep=rep(0,length=101)
+for (i in 1:101) 
+{
+  likep[i]=choose(n,x)*p[i]^x*(1-p[i])^(n-x)
+}
+plot(p,likep,type="l",xlab='number',lwd=3)
+p[which(likep == max(likep))]
+
+
+
+#11
+#p=0.3
+x <- rbinom(1000,10,0.3)
+a <- x/10
+sum(a-1.96*sqrt(a*(1-a)/10)<=0.3 & 0.3<=a+1.96*sqrt(a*(1-a)/10))/1000
+b <- (x+2)/14
+sum(b-1.96*sqrt(b*(1-b)/10)<=0.3 & 0.3<=b+1.96*sqrt(b*(1-b)/10))/1000
+#for p=0.1
+x <- rbinom(1000,10,0.1)
+c <- x/10
+sum(c-1.96*sqrt(c*(1-c)/10)<=0.1 & 0.1<=c+1.96*sqrt(c*(1-c)/10))/1000
+d <- (x+2)/14
+sum(d-1.96*sqrt(d*(1-d)/10)<=0.1 & 0.1<=d+1.96*sqrt(d*(1-d)/10))/1000
+#for p=0.5
+x <- rbinom(1000,10,0.5)
+e <- x/10
+sum(e-1.96*sqrt(e*(1-e)/10)<=0.5 & 0.5<=e+1.96*sqrt(e*(1-e)/10))/1000
+f <- (x+2)/14
+sum(f-1.96*sqrt(f*(1-f)/10)<=0.5 & 0.5<=f+1.96*sqrt(f*(1-f)/10))/1000
+
+
+#12
+n=10
+x1 <- c(3.22,4.06,3.85,3.5,2.8,3.25,4.2,3.05,2.86,3.5,
+        2.95,3.75,4,3.42,2.77,3.2,3.9,2.76,2.75,3.32)
+x1 <- matrix(x1,nrow=10,ncol=2)
+y1 <- x1[,1]-x1[,2]
+mean(y1)+c(-1,1)*qt(0.975,9)*sd(y1)/sqrt(10)
+muVals <- seq(-0.5,0.5, length = 1000)
+likeVals <- sapply(muVals, function(mu) sum((y1 - mu)^2) ^ (-n/2))
+likeVals <- likeVals / max(likeVals)
+plot(muVals, likeVals, type = "l", xlab = expression(mu),
+     ylab = "likelihood", frame = FALSE, lwd = 3)
+lines(range(muVals[likeVals>1/8]), c(1/8,1/8), col = "red")
+lines(range(muVals[likeVals>1/16]), c(1/16,1/16), col = "orange", cex = 3)
+abline(v = range(muVals[likeVals>1/8]), col = "red")
+abline(v = range(muVals[likeVals>1/16]), col = "orange")
+muVals[which(likeVals == max(likeVals))]
+
+
+
+
+#13
+x2 <- c(2.85,3.32,3.01,2.95,2.78,2.86,2.78,2.90,2.76,3.00,3.26,2.84,2.50,3.59,3.3,
+       2.88,3.40,3.02,2.84,2.75,3.2,2.96,2.74,3.02,3.08,3.00,3.4,2.59,3.29,3.32)
+x2 <- matrix(x2,nrow=15,ncol=2)
+diff <- x2[,1]-x2[,2]
+
+## Try a histogram
+hist(diff, main = "Histogram of diff values in smokers")
+
+## Try a boxplot
+boxplot(diff, main = "Boxplot of diff values in smokers")
+
+## Try a histogram
+hist(y1, main = "Histogram of diff values in nonsmokers")
+
+## Try a boxplot
+boxplot(y1, main = "Boxplot of diff values in nonsmokers")
+
+ggplot(data.frame(y1), aes(x = y1)) +
+  geom_density(stat = "density") + 
+  labs(title = "Knernel density estimate for the difference in nonsmokers")
+
+ggplot(data.frame(diff), aes(x = diff)) +
+  geom_density(stat = "density") + 
+  labs(title = "Knernel density estimate for the difference in smokers")
+
+
+
+#14
+ x <- rnorm(n=260, mean=9.78, sd=7.51)
+ y <- rnorm(n=289, mean=12.83, sd=8.31)
+ t.test(y,x)
+ 
+
+
+#15
+pvar=sqrt((1.5^2*8+1.8^2*8)/16)
+4+c(-1,1)*qt(0.975,16)*pvar*sqrt(2/9)

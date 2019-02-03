@@ -1,0 +1,58 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+##Hw1  
+###Question 1  
+Using given files, make a table with the following information per species:
+
+- Question 1.1. Total genome size
+- Question 1.2. Number of chromosomes
+- Question 1.3. Largest chromosome size and name
+- Question 1.4. Smallest chromosome size and name
+- Question 1.5. Mean chromosome length
+
+####Answer:
+
+|                                   | TAIR10         | zm4           | ecoli          | dm6             | hg38            | rice           | ce10           | yeast          |
+|-----------------------------------|----------------|---------------|----------------|-----------------|-----------------|----------------|----------------|----------------|
+| Total genome size                 | 119146348      | 2106338117    | 4639211        | 137547960       | 3088269832      | 373245519      | 100286070      | 12157105       |
+| Number of chromosomes             | 5              | 10            | 1              | 7               | 24              | 12             | 7              | 17             |
+| Largest chromosome size and name  | Chr1: 30427671 | 1: 307041717  | Ecoli: 4639211 | chr3R: 32079311 | chr1: 248956422 | Chr1: 43270923 | chrV: 20924149 | chrIV: 1531933 |
+| Smallest chromosome size and name | Chr4: 18585056 | 10: 150982314 | Ecoli: 4639211 | chr4: 1348131   | chr21: 46709983 | Chr9: 23012720 | chrM: 13794    | chrM: 85779    |
+| Mean chromosome length            | 23829369.6     | 210633811.7   | 4639211.0      | 19649708.6      | 128677909.7     | 31103793.2     | 14326581.4     | 715123.8       |  
+
+####Codes are shown here:  
+
+```{python eval=FALSE}
+#!/usr/bin/env python3  
+import sys  
+f = sys.stdin  
+line = f.readline()  
+dic = {}  
+while line != '':  
+    line = line.strip().rstrip('\n').split()  
+    dic[line[0]]=int(line[1])  
+     ###int is really really really important!!!!  
+    line = f.readline()  
+f.close()  
+print('number of chromosomes:',len(dic))  
+  
+n = 0  
+for i in dic:  
+    n += int(dic[i])  
+print('total length:',n)  
+  
+b = max(dic.values())   # largest size  
+c = list(dic.keys())[list(dic.values()).index(b)]   #coresponding name  
+print('largest chromosome size and name: %s %s'%(c,b))  
+  
+b = min(dic.values())   # smallest size  
+c = list(dic.keys())[list(dic.values()).index(b)]       #coresponding name  
+print('smallest chromosome size and name: %s %s'%(c,b))  
+  
+print('mean chromosome length:',format(n/len(dic),'.1f'))  
+```
+
+
