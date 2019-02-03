@@ -1,0 +1,341 @@
+---
+title: "hw7"
+author: "LuchaoQi"
+date: "December 13, 2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Problem 1  
+
+### a.    
+
+Using $\chi^2$ test:  
+
+```{r}
+E11=250
+E12=250
+E21=250
+E22=250
+O11=218
+O12=278
+O21=227
+O22=277
+TS = (O11-E11)^2/E11+(O12-E12)^2/E12+(O21-E21)^2/E21+(O22-E22)^2/E22
+pchisq(TS,1,lower.tail = FALSE)
+```  
+
+So we reject the null that they are independently and identically distributed with males and females equally likely.   
+
+### b.   
+
+```{r}
+data=matrix(c(218,278,227,277),2)
+chisq.test(data,correct = FALSE)
+```
+p-value>0.05, we fail to reject the null that they are independent.  
+
+## Problem 2  
+
+Same as Problem 1 in homework 6:  
+![3](C:\Users\lcqi\OneDrive\Desktop\3.png)  
+![4](C:\Users\lcqi\OneDrive\Desktop\4.png)  
+
+## Problem 3  
+
+### a.  
+$H_0: p1=p2$  
+$H_A: p1\neq p2$  
+There are cases:  
+
+Table1 =  
+
+| 0 | 15 |
+|---|----|
+| 6 | 13 |  
+
+Table2 =  
+
+| 1 | 14 |
+|---|----|
+| 5 | 14 |  
+
+Table3 =  
+
+| 2 | 13 |
+|---|----|
+| 4 | 15 | 
+ 
+Table4 =  
+
+| 3 | 12 |
+|---|----|
+| 3 | 16 |  
+
+Table5 =  
+
+| 4 | 11 |
+|---|----|
+| 2 | 17 |  
+
+Table6 =  
+
+| 4 | 11 |
+|---|----|
+| 2 | 17 |  
+
+Table7 =  
+
+| 6 | 9  |
+|---|----|
+| 0 | 19 |  
+
+```{r}
+choose(15,0)*choose(19,6)/choose(34,6)+choose(15,1)*choose(19,5)/choose(34,6)+
+  choose(15,2)*choose(19,4)/choose(34,6)+choose(15,4)*choose(19,2)/choose(34,6)+
+  choose(15,5)*choose(19,1)/choose(34,6)+choose(15,6)*choose(19,0)/choose(34,6)
+```  
+p-value = 0.6721736 
+```{r}
+data=matrix(c(2,13,4,15),2)
+fisher.test(data,alternative = "two.sided")
+```    
+
+### b.  
+For normal statistics: using score test
+```{r}
+p1=2/15
+p2=4/19
+p=6/34
+TS = (p1-p2)/sqrt(p*(1-p)*(1/15+1/19))
+pnorm(TS)*2
+```
+For $\chi^2$ statistics:  
+```{r}
+e11=6/34*15
+e12=28/34*15
+e21=6/34*19
+e22=28/34*19
+ts=(2-e11)^2/e11+(13-e12)^2/e12+(4-e21)^2/e21+(15-e22)^2/e22
+pchisq(ts,1,lower.tail = FALSE)
+```
+
+## Problem 4  
+### a.  
+```{r}
+dat <- read.csv("task1.csv", header = FALSE)
+dat2 <- dat[,1 : 10]
+dat2 <- dat2[complete.cases(dat2),]
+vec1 <- as.vector(unlist(dat2))
+obs = rep(0,10)
+for (s in 1:10) {
+  obs[s]=sum(vec1==s)
+}
+chisq.test(obs)
+```
+  
+### b.  
+
+```{r}
+simdat <- t(rmultinom(1000, size = length(vec1), p = rep(.1, 10)))
+chsqStats <- apply(simdat, 1, function(x) chisq.test(x)$statistic)
+s=0
+for (i in 1:1000) {
+  s=s+sum(chsqStats[i]>simdat[i,1:10])
+}
+s/10000
+```  
+The defination of p-value is the probability of more extreme cases. In this case is the probability that chsqStats greater than the observed one.
+
+## Problem 5  
+
+$H_0: or_1=or_2=or_3=1$
+```{r}
+dat=array(c(8,52,5,164,
+            25,29,21,138,
+            50,27,61,208),
+c(2, 2, 3))
+mantelhaen.test(dat, correct = FALSE)
+```  
+
+p-value<0.05, we reject null.  
+$\hat{or}=5.937907$  
+95 percent confidence interval:
+ 3.959672 8.904458  
+Or we could use Mantel/Haenszel estimator:  
+```{r}
+a=8*164/229+25*138/213+50*208/346
+b=5*52/229+21*29/213+61*27/346
+a/b
+```
+
+## Problem 6  
+
+Here's the observed table in this case:  
+
+| 46 | 25  | 54 | 125 |
+|----|-----|----|-----|
+| 1  | 99  | 10 | 110 |
+| 47 | 124 | 64 | 235 |  
+
+Here's the expected table:    
+
+| 25 | 3100/47 | 1600/47 | 125 |
+|----|---------|---------|-----|
+| 22 | 2728/47 | 1408/47 | 110 |
+| 47 | 124     | 64      | 235 |  
+
+Using chi-squared test, we have TS = 117.01, df = 2.  
+p-value = 3.904823e-26  
+
+Or:  
+```{r}
+data = matrix(c(46,1,25,99,54,10),2)
+chisq.test(data,correct = FALSE)
+```
+  
+p-value < 0.05, meaning ethnic origin and genetic type are not independent.  
+
+## Problem 7  
+
+```{r}
+n11 <- c(7,7,7,7,7)
+n12 <- c(49,516,445,299,41)
+n21 <- c(61,61,61,61,61)
+n22 <- c(91,615,408,162,20)
+OR <- n11*n22/(n12*n21)
+logOR <- log(OR)
+SE_logOR <- sqrt(1/n11+1/n12+1/n21+1/n22)
+CI_OR_upper <-exp(logOR+SE_logOR*qnorm(0.975))
+CI_OR_lower <-exp(logOR-SE_logOR*qnorm(0.975))
+OR
+logOR
+cbind(CI_OR_lower,CI_OR_upper)
+require(plotrix)
+plotCI(1:5, OR,CI_OR_upper,CI_OR_lower)
+```
+
+
+The relative risks can be estimated when diseases are rare among cases and controls:  
+![1](C:\Users\lcqi\OneDrive\Desktop\1.png)
+  
+In cases like 5- the diseases are not rare so they can not be estimated.
+
+## Problem 8  
+
+### a.  
+For London:  
+```{r}
+n11=911
+n12=4578
+n21=579
+n22=4219
+OR=n11*n22/(n12*n21)
+se=sqrt(1/n11+1/n12+1/n21+1/n22)
+CI=exp(log(OR)+c(-1,1)*se*qnorm(0.975))
+OR
+CI
+```
+  
+For Manchester:  
+```{r}
+n11=361
+n12=4532
+n21=246
+n22=3775
+OR=n11*n22/(n12*n21)
+se=sqrt(1/n11+1/n12+1/n21+1/n22)
+CI=exp(log(OR)+c(-1,1)*se*qnorm(0.975))
+OR
+CI
+```
+  
+For Newcastle:  
+```{r}
+n11=396
+n12=6598
+n21=219
+n22=5261
+OR=n11*n22/(n12*n21)
+se=sqrt(1/n11+1/n12+1/n21+1/n22)
+CI=exp(log(OR)+c(-1,1)*se*qnorm(0.975))
+OR
+CI
+```
+  
+### b.  
+
+We need the weights of different locations, wether disease and locations are independent etc..  
+
+## Problem 9  
+
+
+```{r}
+data=matrix(c(10,8,1,1),2)
+mcnemar.test(data,correct = FALSE)
+```
+
+  
+## Problem 10  
+
+```{r}
+data=matrix(c(40,20,16,3),2)
+mcnemar.test(data,correct = F)
+```
+
+  
+## Problem 11    
+
+
+![2](C:\Users\lcqi\OneDrive\Desktop\2.png)  
+![0](C:\Users\lcqi\OneDrive\Desktop\0.png)   
+
+
+
+
+## Problem 12  
+
+### a.  
+
+|           | Northeast | Southeast | West     |
+|-----------|-----------|-----------|----------|
+| Northeast |           | n12(p12)  | n13(p13) |
+| Southeast | n21(p21)  |           | n23(p23) |
+| West      | n31(p31)  | n32(p32)  |          |
+
+$H_0 : p12=p21=p31=p13=p23=p32$  
+$H_A :$ at least two of p not equal to each other.  
+
+### b.  
+
+Expected table :   
+
+|           | Northeast | Southeast | West |
+|-----------|-----------|-----------|------|
+| Northeast |           | 201       | 247.5|
+| Southeast | 201       |           | 186.5|
+| West      | 247.5     | 186.5     |      |
+
+
+Observed table :  
+
+
+|           | Northeast | Southeast | West |
+|-----------|-----------|-----------|------|
+| Northeast |           | 267       | 255  |
+| Southeast | 135       |           | 139  |
+| West      | 240       | 234       |      |  
+
+
+### c.  
+
+TS = 67.99  
+```{r}
+pchisq(67.99,3,lower.tail = F)
+```  
+The probabilities of moving between different places are not symmetric.
+
+
+
+
