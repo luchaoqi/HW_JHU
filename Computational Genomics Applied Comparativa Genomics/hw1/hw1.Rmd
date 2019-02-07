@@ -36,9 +36,9 @@ Using these files, make a table with the following information per species:
 | Mean chromosome length            | 23829369.6     | 210633811.7   | 4639211.0      | 19649708.6      | 128677909.7     | 31103793.2     | 14326581.4     | 715123.8       |  
 
 
-####Solutions:
-
-![](https://raw.githubusercontent.com/LuchaoQi/JHU/master/Computational%20Genomics%20Applied%20Comparativa%20Genomics/hw1/1.png?token=AsLxmafxeiMJyMLG0wdUVpRWAOk6e1Xyks5cVnoWwA%3D%3D)
+####Solutions:  
+Input the genes we want to process:  
+![](https://raw.githubusercontent.com/LuchaoQi/JHU/master/Computational%20Genomics%20Applied%20Comparativa%20Genomics/hw1/1.png)
 
 ####Codes used are shown here:  
 
@@ -84,10 +84,87 @@ Download the yeast genome from here: http://schatz-lab.org/appliedgenomics2019/a
 
 
 ####Answers:  
-##### Question 2.1. 
 
+##### Question 2.1.  
 
-##### Question 2.2.
+Silimar solutions in Q1, count the number of As, Cs, Gs, Ts in the entire genome using str.count()  
+![](https://raw.githubusercontent.com/LuchaoQi/JHU/master/Computational%20Genomics%20Applied%20Comparativa%20Genomics/hw1/Capture.PNG)  
+
+##### Question 2.2.  
+
+Using a dictionary whith key equals # of window, value equals %GC and draw this distionary:  
+![](https://raw.githubusercontent.com/LuchaoQi/hw/master/applied_genomics/hw1/figure_1.png)  
+
+##### Question 2.3.  
+
+Count the number of multiple values responding to one key and draw the bar:  
+![](https://raw.githubusercontent.com/LuchaoQi/hw/master/applied_genomics/hw1/figure_1-1.png)  
+
+##### Question 2.4.  
+
+From the results shown in Q2.2, we could expect windows arround #32000, #33000 would perform poorly.  
+
+####Codes used are shown here:  
+
+```{python eval=FALSE}
+#!/usr/bin/env python3
+import sys, matplotlib.pyplot as plt
+f = sys.stdin
+line = sys.stdin.readline() #skip header
+line = sys.stdin.readline()
+seq = ''
+while line != '':
+	seq += line.strip().rstrip('\n')
+	line = f.readline()
+f.close()
+print('numeber of "'"A"'"s:', seq.count('A'))
+print('numeber of "'"T"'"s:', seq.count('T'))
+print('numeber of "'"G"'"s:', seq.count('G'))
+print('numeber of "'"C"'"s:', seq.count('C'))
+### Question 2.2
+n = len(seq)//100	 #number of bins, discard the last window	
+dic ={}
+for i in range(n):
+	b = ''
+	b += seq[100*i:100*(i+1)] #divide the sequence by a window of 100
+	for x in b:		#for each bin, count #GC
+		gc = ''
+		gc += str(b.count('G')+b.count('C'))
+	dic[i+1]= int(gc)/100	# get a dictionary: key is the number of   \window, value is %GC
+###Q2.2###
+lists = sorted(dic.items())
+x,y = zip(*lists)
+plt.scatter(x,y)
+plt.suptitle('%GC of 100bp windows across the genome',fontsize = 30)
+plt.xlabel('# of 100bp windows',fontsize = 25)
+plt.ylabel('% of G+C',fontsize = 25)
+plt.xlim(0-10000,max(x)+10000)
+plt.ylim(0,1)
+plt.vlines(max(x),0,1)
+plt.annotate(' End of chromosome:\n discard the last window \n which is less than 100bp',(max(x),0.4),fontsize = 25)
+plt.show()
+###Q2.3###
+for i in range(n):
+	b = ''
+	b += seq[100*i:100*(i+1)]
+	for x in b:
+		gc = ''
+		gc += str(b.count('G')+b.count('C'))
+	dic[i+1]= int(gc)
+dic1={}
+for n in range(101):
+	dic1[n]=sum(value == n for value in dic.values())
+#print(dic1)
+plt.suptitle('Question 2.3',fontsize = 30)
+lists = sorted(dic1.items())
+x,y = zip(*lists)
+plt.bar(x,y)
+plt.xlabel('%GC*100',fontsize = 25)
+plt.ylabel('# of windows with coresponding %GC',fontsize = 25)
+plt.show()
+
+```
+
 
 
 
