@@ -1,0 +1,21 @@
+--- 
+output: 
+    md_document: 
+    variant: markdown_github
+--- 
+
+
+#### Question 1. Coverage Analysis [20 pts]
+
+Download the reads and reference genome from: https://github.com/schatzlab/appliedgenomics2019/raw/master/assignments/assignment2/asm.tgz
+
+Note I have provided both paired-end and mate-pairs reads (see included README for details). 
+Make sure to look at all of the reads for the coverage analysis and kmer analysis, as well as in the assembly.
+
+- Question 1a. How long is the reference genome? [Hint: Try `samtools faidx`]
+
+> After trying the following command:  
+samtools faidx ref.fa  
+we could get a file with .fai extension. 
+
+![](https://user-images.githubusercontent.com/46330265/52497133-49d6fa80-2ba3-11e9-8c6a-5507ceecdbed.png)
