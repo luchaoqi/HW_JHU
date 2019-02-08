@@ -1,10 +1,8 @@
---- 
-output: 
-    md_document: 
-    variant: markdown_github
---- 
-
-
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 #### Question 1. Coverage Analysis [20 pts]
 
 Download the reads and reference genome from: https://github.com/schatzlab/appliedgenomics2019/raw/master/assignments/assignment2/asm.tgz
@@ -16,6 +14,18 @@ Make sure to look at all of the reads for the coverage analysis and kmer analysi
 
 > After trying the following command:  
 samtools faidx ref.fa  
-we could get a file with .fai extension. 
+we could get a file with .fai extension. The total length of genome is 233806 in bases
 
-![](https://user-images.githubusercontent.com/46330265/52497133-49d6fa80-2ba3-11e9-8c6a-5507ceecdbed.png)
+
+\pagebreak
+
+- Question 1b. How many reads are provided and how long are they? Make sure to measure each file separately [Hint: Try `FastQC`]  
+
+
+\pagebreak
+
+- Question 1c. How much coverage do you expect to have? [Hint: A little arthmetic]
+
+\pagebreak
+
+- Question 1d. Plot the average quality value across the length of the reads [Hint: Screenshot from `FastQC`]
