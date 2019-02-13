@@ -1,3 +1,4 @@
+library(gplots)
 #Get	the	spam	database	into	R	(install package kernlab)
 library(kernlab)
 
@@ -25,7 +26,7 @@ library(ROCR)
 pdf('Figure1.pdf')
 pred_scores1 <- attr(prediction1, "probabilities")[,1]
 pred1 <- prediction(pred_scores1, spamtest[,"type"])
-perf1 <- performance(pred1, "tpr", "fpr") #plots TP rate on y-axis, FP rate on x-axis
+perf1 <- performance(pred1, "tpr", "fpr") 
 perf1.auc <- performance(pred1,'auc')
 auc1 <- perf1.auc@y.values
 plot(perf1,  colorize=TRUE)
