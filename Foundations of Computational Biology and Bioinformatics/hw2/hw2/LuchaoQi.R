@@ -5,9 +5,9 @@ library(kernlab)
 data(spam) # spam dataset has 4601 email samples, 57 features, 2 types (SPAM and NONSPAM)
 # testidx <- which(1:length(spam[,1])%%5 == 0) 
 set.seed(100)
-testidx <- sample(1:dim(spam)[1],0.2*dim(spam)[1],replace = FALSE)#randomly choose split the dataset
-spamtrain <- spam[-testidx,] #3680 samples (80% for training set)
-spamtest <- spam[testidx,] #920 samples (20% for test set)
+testidx <- sample(1:dim(spam)[1],0.2*dim(spam)[1],replace = FALSE)#randomly split the data into two parts
+spamtrain <- spam[-testidx,] #(80% for training set)
+spamtest <- spam[testidx,] #(20% for test set)
 
 
 
@@ -40,5 +40,35 @@ auc2 <- perf2.auc@y.values
 plot(perf2, colorize=TRUE)
 title("ROC for SVM prediction w/ Linear Kernel")
 legend('center',legend=parse(text=sprintf('AUC == %s',auc2)))
+
+dev.off()
+
+
+#Split spam data into 10 equally sized part
+folds <- rep(1:10,len=nrow(spam))
+testScore <- list()
+testLabel <- list()
+for (j in 1:10){
+  testidx <- which(folds == j)
+  testGroup <- spam[testidx,]
+  trainGroup <- spam[-testidx,]
+  model1 <- svm(type~.,data=testGroup, kernel = "radial", probability = TRUE) #use the radial kernel model
+  predictions <- predict(model1,testGroup, decision.values = TRUE, probability=TRUE)
+  pred_scores <- attr(predictions, "probabilities")[,1]
+  testLabel[j] <- list(testGroup[,"type"])
+  testScore[j] <- list(pred_scores)
+}
+
+#Plot ROC curves for each cross-validation fold and corresponding predictions
+#With average ROC curve and box plot
+pdf('Figure2.pdf')
+pred <- prediction(testScore, testLabel)
+perf <- performance(pred,"tpr","fpr")
+perf.auc <- performance(pred,"auc")
+auc <- perf.auc@y.values
+plot(perf,col="grey82",lty=3)
+plot(perf, lwd=3,avg="vertical",spread.estimate="boxplot",add=T)
+title("ROC for 10-fold cross-validation on radial kernal SVM prediction")
+legend('center',legend=parse(text=sprintf("AUC==%s",auc)))
 
 dev.off()

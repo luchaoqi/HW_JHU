@@ -5,7 +5,7 @@ library(kernlab)
 data(spam) # spam dataset has 4601 email samples, 57 features, 2 types (SPAM and NONSPAM)
 # testidx <- which(1:length(spam[,1])%%5 == 0) 
 set.seed(100)
-testidx <- sample(1:dim(spam)[1],0.2*dim(spam)[1],replace = FALSE)#randomly choose split the dataset
+testidx <- sample(1:dim(spam)[1],0.2*dim(spam)[1],replace = FALSE)#randomly split the data into two parts
 spamtrain <- spam[-testidx,] #3680 samples (80% for training set)
 spamtest <- spam[testidx,] #920 samples (20% for test set)
 
