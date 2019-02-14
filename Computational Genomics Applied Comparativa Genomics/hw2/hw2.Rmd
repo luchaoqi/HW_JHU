@@ -1,0 +1,191 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+- Question 1a. How long is the reference genome? [Hint: Try `samtools faidx`]  
+
+After samtools faidx ref.fa, we could get a file with .fai extension. Try following command:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\1a1.png)  
+ The total length of genome is 233806 in bases  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\1a2.png)
+
+
+\pagebreak
+
+- Question 1b. How many reads are provided and how long are they? Make sure to measure each file separately [Hint: Try `FastQC`]  
+
+Use the commands shown on github:  
+$ fastqc /path/to/reads.fq  
+For frag180.1.fq, there are 35217 100bp reads.  
+For frag180.2.fq, there are 35217 100bp reads.  
+For jump2k.1.fq, there are 70435 50bp reads.  
+For jump2k.2.fq, there are 70435 50bp reads.
+
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\1b1.png)   
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\1b3.png)    
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\1b2.png)    
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\1b4.png)
+
+\pagebreak
+
+- Question 1c. How much coverage do you expect to have? [Hint: A little arthmetic]  
+
+We expect 15x coverage.((length of reads * number of reads)/ total genome size)
+
+\pagebreak
+
+- Question 1d. Plot the average quality value across the length of the reads [Hint: Screenshot from `FastQC`]  
+
+For frag180.1:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\1d1.png)  
+For frag180.2:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\1d2.png)  
+For jump2k.1:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\1d3.png)  
+For jump2k.2:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\1d4.png)  
+
+\pagebreak
+
+- Question 2a. How many kmers occur exactly 50 times? [Hint: try jellyfish histo]  
+
+After following codes:  
+
+$ jellyfish count -m 21 -C -s 1000000 *.fq  
+$ jellyfish histo mer_counts.jf > reads.histo  
+$ vim reads.histo  
+
+1070 kmers occur 50 times.  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\2a1.png)  
+
+\pagebreak  
+
+
+- Question 2b. What are the top 10 most frequently occurring kmers [Hint: try jellyfish dump along with sort and head]  
+
+Though following commands, we could get the top 10 most frequently occurring kmers.  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\2b1.png)  
+
+\pagebreak  
+
+
+- Question 2c. What is the estimated genome size based on the kmer frequencies?  
+
+The min estimated Genome Size is 233876 bp. It probably has something to do with kmer coverage.  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\2c1.png) 
+
+\pagebreak  
+
+- Question 2d. How well does the GenomeScope genome size estimate compare to the reference genome? [Hint: In a sentence or two]  
+
+The GenomeScope genome size is only 70bp longer than the reference genome. It does pretty well.  
+
+
+\pagebreak  
+
+- Question 3a. How many contigs were produced? [Hint: try grep -c '>' contigs.fasta]  
+
+After running the Spades command:  
+$ spades.py --pe1-1 frag180.1.fq --pe1-2 frag180.2.fq --mp1-1 jump2k.1.fq --mp1-2 jump2k.2.fq -o asm -t 4 -k 31  
+We could find the number of contigs:  
+grep -c '>' contigs.fasta  
+So we have 4 contigs.  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\3a1.png)  
+\pagebreak  
+
+- Question 3b. What is the total length of the contigs? [Hint: try samtools faidx, plus a short script/excel]  
+
+After samtools faidx contigs.fa, we could use following command to get the total length of contigs:  
+awk '{print $2}' contigs.fasta.fai|paste -s -d +|bc  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\3b1.png)  
+We could get the total length is 234743  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\3b2.png)  
+
+\pagebreak  
+
+- Question 3c. What is the size of your large contig? [Hint: check samtools faidx plus sort -n]   
+
+As shown in Question 3b's bash file:  
+sort -n -k 2 -t \t  contigs.fasta.fai  
+We could get the largest contig is   105841  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\3b2.png)  
+
+\pagebreak  
+
+- Question 3d. What is the contig N50 size? [Hint: Write a short script, or use excel]  
+
+Use the codes as shown below:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\3b3.png)  
+
+According to the defination of contig N50, the size of contig N50 should be 47856.  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\3b4.png)
+
+\pagebreak
+
+
+- Question 4a. What is the average identify of your assembly compared to the reference? [Hint: try dnadiff]  
+
+Try following commands:  
+$ dnadiff ref.fa contigs.fasta  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\4a1.png)  
+we could see average identity of the assembly is 100:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\4a2.png)
+
+
+
+
+\pagebreak
+
+- Question 4b. What is the length of the longest alignment [Hint: try nucmer and show-coords]  
+
+After trying the commands shown on github:  
+$ nucmer /path/to/ref.fa /path/to/qry.fa  
+Through following commands:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\4b1.png)  
+We could see the longest alignment's length is 105841:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\4b2.png)  
+
+\pagebreak
+
+- Question 4c. How many insertions and deletions are in the assembly? [Hint: try dnadiff]  
+
+
+After trying commands shown on github:  
+$ dnadiff /path/to/ref.fa /path/to/qry.fa  
+Through following command:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\4c1.png)  
+We could find there are 5 insertions in the reference 1 insertion in the assembly, which means 5 deletions in the assembly.  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\4c2.png) 
+
+\pagebreak  
+
+- Question 5a. What is the position of the insertion on the reference? [Hint: try show-coords]  
+
+
+As shown in snapshot:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\5a1.png)  
+
+We could infer the insertion happens on the position of bases: 26789-26790  
+
+\pagebreak  
+
+- Question 5b. How long is the novel insertion? [Hint: try show-coords]  
+
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\5a1.png)  
+We could see the length is (27763 - 26786 -1) = 976  
+
+\pagebreak  
+
+- Question 5c. What is the DNA sequence of the encoded message? [Hint: try samtools faidx to extract the insertion]  
+Through the commands shown below, we could get the sequence:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\5c1.png)  
+\pagebreak 
+
+- Question 5d. What is the secret message? [Hint: run dna-encode.pl -d to decode the string from 5c]  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw2\5d1.png) 
+
+
+
+
