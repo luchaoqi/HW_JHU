@@ -1,8 +1,6 @@
-install.packages("R.utils")
-library(R.utils)
-countLines("Alexander_the_Great")
-# from the console, we could see the number of lines is 3547
-# > countLines("Alexander_the_Great")
+hi = readLines('https://en.wikipedia.org/wiki/Alexander_the_Great')
+length(hi)
+
+# > length(hi)
 # [1] 3547
-# attr(,"lastLineHasNewline")
-# [1] TRUE
+

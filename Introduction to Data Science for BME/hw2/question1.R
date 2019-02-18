@@ -3,6 +3,10 @@ mylag = function(x,y){
   a = matrix(nrow = length(x))
   colnames(a) = 'L0'
   a[] = x                   #origiinal column
+  if(any(y<0)||any(x<0)){
+    print('Try another input')
+    stop()
+    }
   for (i in y){
     b = matrix(nrow = length(x))
     colnames(b)  = Y[i]
@@ -12,4 +16,6 @@ mylag = function(x,y){
   return(a)
 }
 
-mylag(c(1,2,3,4),c(1,2,3,4))
+# mylag(c(1,2,3,4),c(1,2,3,4))
+# mylag(c(1,2,3,4),c(-1,1,2,3,4))
+# mylag(c(-1,1,2,3,4),c(-1,1,2,3,4))

@@ -1,3 +1,4 @@
+#run Hogwart() in the console
 Hogwarts = function(){
   
   continue = TRUE
@@ -6,7 +7,7 @@ Hogwarts = function(){
     
     response = readline(prompt = "Enter response (q to quit) >")
     
-    if (response == 'bravery'){
+    if (response == 'brave'){
       print('Gryffindor')
     }
     else if (response == 'plants'){
@@ -22,5 +23,5 @@ Hogwarts = function(){
     
   }
 }
-#run Hogwart() in the console
+
 
