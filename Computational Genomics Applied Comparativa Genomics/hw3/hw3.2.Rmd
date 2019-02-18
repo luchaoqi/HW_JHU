@@ -1,0 +1,24 @@
+---
+header-includes: \usepackage{bbm}
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+
+### Q3a.  
+
+Through following code, We could see the results ouputted at the end of code.  
+
+```{python}
+def computeBWT(s):
+    s = s +'$'
+    rows = sorted(s[i:] + s[:i] for i in range(len(s)))
+    bwt = [row[-1:] for row in rows]
+    print("".join(bwt))
+    return "".join(bwt)
+computeBWT('I_am_fully_convinced_that_species_are_not_immutable;_but_that_those_belonging_to_what_are_called_the_same_genera_are_lineal_descendants_of_some_other_and_generally_extinct_species,_in_the_same_manner_as_the_acknowledged_varieties_of_any_one_species_are_the_descendants_of_that_species._Furthermore,_I_am_convinced_that_natural_selection_has_been_the_most_important,_but_not_the_exclusive,_means_of_modification.')
+```
+
+

@@ -9,6 +9,7 @@ corner = function(a,b){
   }
   else {
     print('Error: out of range')
+    stop()
   }
 }
 

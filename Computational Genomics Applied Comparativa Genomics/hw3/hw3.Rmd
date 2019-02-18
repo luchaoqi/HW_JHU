@@ -1,0 +1,135 @@
+---
+header-includes: \usepackage{bbm}
+output: pdf_document
+
+---
+
+   
+## Assignment 3  
+## Author: "LuchaoQi" Email: lqi9@jhu.edu
+
+### Q1a.  
+
+We need $5*10^4$ 100bp reads.  
+
+\begin{align*}
+    n*100bp &= 1Mbp * 5\\
+    n &= \frac{5*10^6}{10^2} \\
+    n &=5*10^4 
+\end{align*}  
+
+\pagebreak  
+
+### Q1b.  
+
+Use following R code to simulate 5x coverage of a 1Mbp genome:  
+```{r}
+
+set.seed(100)
+s = 1000000
+n = 5
+a = sample(1:s, n*s,replace=TRUE)
+coverage = rep(0,s)
+for (i in a ){coverage[i] = coverage[i]+1}
+hist(coverage,prob=T,col="light blue")
+xfit<-seq(min(coverage),max(coverage))
+yfit<-dpois(xfit,n)
+lines(xfit,yfit,col="red",lwd=3)
+
+length(which(coverage==0))
+mean(coverage)
+```
+
+\pagebreak
+
+### Q1c.  
+
+Theoretically, the Poisson expecation should be the value of coverage:5, which equals to exactly the mean of our simulations. 
+
+\pagebreak
+
+### Q1d.  
+
+Use following R code to simulate 15x coverage:  
+
+```{r}
+set.seed(100)
+s = 1000000
+n = 15
+a = sample(1:s, n*s,replace=TRUE)
+coverage = rep(0,s)
+for (i in a ){coverage[i] = coverage[i]+1}
+hist(coverage,prob=T,col="light blue")
+xfit<-seq(min(coverage),max(coverage))
+yfit<-dpois(xfit,n)
+lines(xfit,yfit,col="red",lwd=3)
+
+length(which(coverage==0))
+mean(coverage)
+```
+
+Theoretically, the Poisson expecation should be the value of coverage: 15, which equals to exactly the mean of our simulations. 
+
+\pagebreak  
+
+### Q2a.  
+
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw3\q2a.png)
+\pagebreak
+
+### Q2b.  
+
+One possible genome sequence could be:  
+ATTCATTCTTATTG
+
+
+\pagebreak 
+
+### Q2c.  
+
+The longest repeat should be:  
+ATTCTTATT  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\Computational Genomics Applied Comparativa Genomics\hw3\q2c.png)
+
+\pagebreak
+
+### Q3a.  
+
+Through following code, We could see the results ouputted at the end of code.  
+
+```{python}
+def computeBWT(s):
+    s = s +'$'
+    rows = sorted(s[i:] + s[:i] for i in range(len(s)))
+    bwt = [row[-1:] for row in rows]
+    print("".join(bwt))
+    return "".join(bwt)
+computeBWT('I_am_fully_convinced_that_species_are_not_immutable;_but_that_those_belonging_to_what_are_called_the_same_genera_are_lineal_descendants_of_some_other_and_generally_extinct_species,_in_the_same_manner_as_the_acknowledged_varieties_of_any_one_species_are_the_descendants_of_that_species._Furthermore,_I_am_convinced_that_natural_selection_has_been_the_most_important,_but_not_the_exclusive,_means_of_modification.')
+```
+
+
+\pagebreak
+
+### Q4.  
+
+Through following code, We could see the results ouputted at the end of code.  
+
+
+```{python}
+
+def decodeBWT(r):
+    rows = [""] * len(r)
+    for i in range(len(r)):
+        rows = sorted(r[i] + rows[i] for i in range(len(r)))
+    s = [row for row in rows if row.endswith("$")][0]
+    print(s.rstrip("$").strip())
+    return s.rstrip("$").strip()
+decodeBWT('.uspe_gexr_______$..,e.orrs,sdddeedkdsuoden-tf,tyewtktttt,sewteb_ce__ww__h_PPsm_u_naseueeennnrrlmwwhWcrskkmHwhttv_no_nnwttzKt_l_ocoo_be___aaaooaAakiiooett_oooi_sslllfyyD__uouuueceetenagan___rru_aasanIiatt__c__saacooor_ootjeae______ir__a')
+
+```
+
+
+
+
+
+

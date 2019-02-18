@@ -1,0 +1,25 @@
+---
+header-includes: \usepackage{bbm}
+output:
+  html_document:
+    df_print: paged
+---
+
+
+### Q4.  
+
+Through following code, We could see the results ouputted at the end of code.  
+
+
+```{python}
+
+def decodeBWT(r):
+    rows = [""] * len(r)
+    for i in range(len(r)):
+        rows = sorted(r[i] + rows[i] for i in range(len(r)))
+    s = [row for row in rows if row.endswith("$")][0]
+    print(s.rstrip("$").strip())
+    return s.rstrip("$").strip()
+decodeBWT('.uspe_gexr_______$..,e.orrs,sdddeedkdsuoden-tf,tyewtktttt,sewteb_ce__ww__h_PPsm_u_naseueeennnrrlmwwhWcrskkmHwhttv_no_nnwttzKt_l_ocoo_be___aaaooaAakiiooett_oooi_sslllfyyD__uouuueceetenagan___rru_aasanIiatt__c__saacooor_ootjeae______ir__a')
+
+```

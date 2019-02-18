@@ -1,0 +1,20 @@
+---
+header-includes: \usepackage{bbm}
+output:
+  html_document:
+    df_print: paged
+---
+
+   
+## Assignment 3  
+## Author: "LuchaoQi" Email: lqi9@jhu.edu
+
+### Q1a.  
+
+We need $5*10^4$ 100bp reads.  
+
+\begin{align*}
+    n*100bp &= 1Mbp * 5\\
+    n &= \frac{5*10^6}{10^2} \\
+    n &=5*10^4 
+\end{align*}  
