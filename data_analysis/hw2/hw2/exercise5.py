@@ -21,7 +21,8 @@ args = parser.parse_args()
 train_expression = pd.read_csv(args.traindata,header=0) # train_expression.csv
 #train_expression = pd.read_csv('train_expression.csv',header=0)
 X = np.array(train_expression.T.iloc[1:,:])
-phen_train = pd.read_csv('phen_train.csv',header=0) # phen_train.csv
+phen_train = pd.read_csv(args.trainresult,header=0)
+#phen_train = pd.read_csv('phen_train.csv',header=0) # phen_train.csv
 Y = np.array(phen_train.iloc[:,1:]).reshape(145,)
 model = LogisticRegression()
 model.fit(X,Y)
@@ -31,7 +32,8 @@ test_expression = pd.read_csv(args.testdata, header=0) # test_expression.csv
 #test_expression = pd.read_csv('test_expression.csv',header=0)
 x = np.array(test_expression.T)[1:]
 y_predic = model.predict(x).tolist()
-phen_test = pd.read_csv('phen_test.csv',header = 0) # phen_test.csv
+phen_test = pd.read_csv(args.testresult,header = 0)
+#phen_test = pd.read_csv('phen_test.csv',header = 0) # phen_test.csv
 y = np.array(phen_test.iloc[:,1:])
 y = list(map(int, y))
 
