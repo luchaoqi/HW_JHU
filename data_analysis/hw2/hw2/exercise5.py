@@ -66,7 +66,7 @@ test_expression = pd.read_csv(args.testdata, header=0) # test_expression.csv
 #test_expression = pd.read_csv('test_expression.csv',header=0)
 x = np.array(test_expression.T.iloc[1:,:10])
 y_predic = model.predict(x).tolist()
-phen_test = pd.read_csv('phen_test.csv',header = 0) # phen_test.csv
+phen_test = pd.read_csv(args.testresult,header = 0) # phen_test.csv
 y = np.array(phen_test.iloc[:,1:])
 y = list(map(int, y))
 
