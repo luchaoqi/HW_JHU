@@ -12,9 +12,9 @@ from sklearn.linear_model import Ridge
 parser = argparse.ArgumentParser()
 parser.add_argument("--X", action='store', dest="traindata", help="training data ")
 parser.add_argument("--Y", action='store', dest="trainresult", help="training data result")
-parser.add_argument("--textX", action='store', dest="testdata", help="testing data")
+parser.add_argument("--testX", action='store', dest="testdata", help="testing data")
 parser.add_argument("--testY", action='store', dest="testresult", help="testing data result")
-option = parser.parse_args()
+args = parser.parse_args()
 
 
 # train model
