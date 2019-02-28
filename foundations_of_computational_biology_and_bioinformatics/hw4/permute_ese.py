@@ -1,6 +1,7 @@
 '''
-Team: Saki Fujita (sfujita2), Vorada Sakulsaengprapha (vsakuls1), Chuheng Chen (cchen217)
-First of two scripts that generates decoy ESE binding site sequences.
+JHED ID: lqi9
+Pratical number: p04
+Script that generates decoy ESE binding site sequences.
 '''
 
 
