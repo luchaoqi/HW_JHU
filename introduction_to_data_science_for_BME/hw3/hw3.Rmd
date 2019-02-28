@@ -1,0 +1,88 @@
+---
+title: "hw3"
+author: "LuchaoQi"
+date: "February 26, 2019"
+output:
+  md_document: 
+    variant: markdown_github
+  html_document: default
+  pdf_document: default
+---
+
+```{r warning=FALSE,message = F}
+library(magrittr); library(dplyr); library(MRIcloudT1volumetrics);library('tidyr')
+```
+
+#Q1
+The intracranial volume is 1378295.  
+
+```{r}
+dat = readSubject('kirby_3_1_ax_283Labels_M2_corrected_stats.txt')
+dat = subject2df(dat)
+dat = dat %>% filter(level==1 & type==1)
+sum(dat$volume)
+```
+
+
+#Q2
+```{r}
+library(ggplot2)
+dat = read.table('https://raw.githubusercontent.com/bcaffo/ds4bme/master/data/classInterests.txt',
+                 header = 1)
+ggplot(dat,aes(x=dat$Year)) + geom_bar() + labs(title = 'Bar plots of year', x = 'Year')
+ggplot(dat,aes(x=dat$Program)) + geom_bar() + labs(title = 'Bar plots of program',x = 'Program')
+```
+
+
+#Q3
+```{r fig.width=10,fig.height=8}
+require('ggmosaic')
+dat = read.table('https://raw.githubusercontent.com/bcaffo/ds4bme/master/data/classInterests.txt'
+                 ,header = 1)
+ggplot(data = dat) +
+  geom_mosaic(aes(x = product(Year,Program), fill=Year), na.rm=TRUE) +
+  labs(x="Program", y = "Year",title='Class Data') +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+```
+
+
+
+#Q4
+```{r}
+dat1 = read.csv('https://raw.githubusercontent.com/jhu-advdatasci/2018/master/data/GSE5859_exprs.csv'
+                ,header = 1)
+# dat1 = read.csv('GSE5859_exprs.csv',header = 1)
+rownames(dat1) = dat1[,1]
+dat1 = dat1[,-1]
+dat1 = sweep(dat1,1,rowMeans(dat1))
+dat1 = sweep(dat1,2,colMeans(dat1))
+#check the mean of rows and cols
+#head(rowMeans(dat1))
+#head(colMeans(dat1))
+```
+
+
+
+#Q5
+```{r fig.width=15,fig.height=11}
+dat = read.csv('healthcare-spending.csv',skip = 2,header = 1)[2:52,]
+colnames(dat)[-1] = c(1991:2014)
+dat = gather(dat,key = Year, value = Spending, 2:25) 
+ggplot(dat, aes(x=Year,y=Spending,col=Location,group = Location)) + 
+  geom_line()+
+  theme(axis.text.x = element_text(angle = 90,vjust=0))
+```
+
+
+
+
+#Q6
+```{r}
+dat = read.csv('healthcare-spending.csv',skip = 2,header = 1)[2:52,]
+dat = mutate(dat,Spending = apply(dat[-1],1,mean)) %>% select(Location,Spending)
+ggplot(dat,aes(x=Location,y = Spending)) + 
+  geom_bar(stat = "identity")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust = 0))+
+  labs(x = "States")
+```
+
