@@ -1,0 +1,278 @@
+---
+title: "Untitled"
+author: "LuchaoQi"
+date: "February 28, 2019"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+#Q1
+##1a
+Compute the edit distance:  
+
+```{}
+Alpha: 	EALERMFLSFPTTKTYFPHFDLSHGSAQVK  
+Beta: 	EALGRLLVVYPWTQRFFESFGDLSTPDAVMGNPKVK
+```
+
+
+```{}
+str1 = 'EALERMFLSFPTTKTYFPHFDLSHGSAQVK'
+str2 = 'EALGRLLVVYPWTQRFFESFGDLSTPDAVMGNPKVK'
+m = len(str1)
+n = len(str2)
+dp = [[0 for x in range(n+1)] for x in range(m+1)]
+for i in range(m+1):
+  for j in range(n+1):
+    if i == 0:
+      dp[i][j] = j
+    elif j == 0:
+      dp[i][j] = i
+    elif str1[i-1] == str2[j-1]:
+      dp[i][j] = dp[i-1][j-1]
+    else:
+      dp[i][j] = 1 + min(dp[i][j-1], dp[i-1][j],dp[i-1][j-1])
+for i in range(len(dp)):
+  print(dp[i])
+```
+
+
+
+
+Results:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\applied_genomics\hw4\q1.png)  
+
+
+So the edit distance is 22.  
+Sequences:  
+
+EALERMFLSFPTTKTYFPHF - DLS - - - - - HGSAQVK  
+EALGRLLVVYPWTQRFFESFGDLSTPDAVMGNPKVK
+
+
+
+
+
+\pagebreak
+
+#Q2
+##2a
+
+Commands:
+```{}
+bowtie2-build chr22.fa chr22
+bowtie2 -x chr22 -1 sample/pair.1.fq -2 sample/pair.2.fq > sample.sam
+samtools flagstat sample.sam 
+```
+  
+  
+Results:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\applied_genomics\hw4\1.png)  
+
+So 3365708 reads align to the chr22 reference. 1984 reads did not align. 1846 reads had AKA singletons.
+
+
+\pagebreak
+
+##2b
+Commands:  
+```{}
+samtools view -c -f 16 sample.sam
+```  
+
+We can get 1678219 reads mapped to the reverse strand.
+
+
+\pagebreak
+
+##2c
+
+Commands:  
+```{}
+samtools sort sample.sam > sample.bam
+samtools index sample.bam
+freebayes -f chr22.fa sample.bam > sample.vcf
+bcftools filter -e "QUAL<20" sample.vcf > filtered.vcf
+bcftools stats filtered.vcf > stats.txt
+vim stats.txt
+```
+
+Results:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\applied_genomics\hw4\2.png)  
+
+So there are 14965 single nucleotides with QUAL>20 and 1403 indels.  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\applied_genomics\hw4\3.png)  
+
+Of the indels, there are 707 deletions, 696 insertions.
+
+\pagebreak
+
+#Q3
+##3a  
+
+Python:  
+<!-- ![](C:\Users\lcqi\OneDrive\Desktop\Courses\applied_genomics\hw4\4.0.png) -->
+```{}
+import pysam
+chr22 = pysam.FastaFile("chr22.fa")
+seq = chr22.fetch("chr22",21000000,22000000)
+
+sub = open("sub.fa","w")
+sub.write(">chr22:21000000,22000000 \n")
+sub.write(seq + '\n')
+sub.close()
+
+reads = open("reads.fa","w")
+for i in range(len(seq)-35+1):
+	number  = ">"+str(i+1)#pos in chr22
+	subseq	= seq[i:i+35]
+	reads.write(number + "\n")
+	reads.write(subseq + "\n")
+reads.close() 
+```
+
+
+Commands:  
+
+```{}
+python3 reads.py #get the ref and pseudo reads
+bowtie2-build sub.fa sub #build up the index
+bowtie2 -x sub -f -U reads.fa -S sub.sam
+```  
+
+Results:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\applied_genomics\hw4\4.png)  
+
+So 404253 aligned more than one times. The alignment rate is 100%. 0 read did not align.
+
+\pagebreak
+
+##3b  
+
+Commands:  
+
+```{}
+samtools sub.sam -o sub.sam
+cat sub.sam|awk 'NR >3'|awk '{if(sqrt(($1-$4)^2)<=5) print $1"\t"$4}'> 3b.txt
+wc 3b.txt
+```  
+
+Result:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\applied_genomics\hw4\5.png)  
+
+So 839184 reads aligned correctly(within 5bp)  
+
+
+\pagebreak
+
+##3c
+
+Commands:  
+
+```{}
+cat sub.sam|awk 'NR>3 {print $1"\t"$5}' >3c.txt 
+```  
+
+
+Python:  
+
+```{}
+import matplotlib.pyplot as plt
+
+f = open('3c.txt','r')
+dic = {}
+for lines in f:
+	line =  lines.strip().rstrip('\n').split('\t')
+	a = int(line[0])//1000 + 1
+	if a in dic:
+		dic[a] = dic[a] + int(line[1])
+	else:
+		dic[a] = int(line[1])
+for i in dic:
+	dic[i] = dic[i]/1000
+
+f.close()
+
+plt.scatter(dic.keys(),dic.values())
+plt.xlabel('bin #')
+plt.ylabel('MAPQ')
+plt.show()
+```
+
+
+Results:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\applied_genomics\hw4\3c.png)  
+
+
+
+
+\pagebreak
+
+##3d
+
+
+Commands:  
+
+```{}
+cat sub.sam|awk 'NR >3'|awk '{print $1"\t"$4}'> 3d.txt
+```  
+
+Python:  
+
+```{}
+import matplotlib.pyplot as plt
+f = open('3d.txt','r')
+dic = {}
+for lines in f:
+	line =  lines.strip().rstrip('\n').split('\t')
+	a = int(line[0])//1000 + 1 
+	if a in dic:
+                dic[a] = dic[a] + (line[0] == line[1])
+	else:
+                dic[a] = (line[0]==line[1])
+for i in dic:
+	dic[i] = dic[i]/1000
+
+f.close()
+plt.scatter(dic.keys(),dic.values())
+plt.xlabel('bin #')
+plt.ylabel('fraction')
+plt.show()
+```  
+
+
+Results:  
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\applied_genomics\hw4\3d.png)  
+
+Looks similar to the plot in 3c.
+
+
+\pagebreak
+
+
+#Q4
+
+##4a
+
+
+```{r}
+X = 1:200
+Y = vector()
+for (size in X)
+  {
+    Y[size] = qbinom(0.95,size,0.5)/size
+}
+library(ggplot2)
+ggplot(data = as.data.frame(Y),aes(x=1:200,y=Y))+geom_point()
+```
+
+
+\pagebreak
+
+##4b  
+
+The plot seems to approach 0.5 because the larger the size is, according to the binormial distribution(p=0.5), the closer 95% quantile is to the 50% of the size.
+
+
+
