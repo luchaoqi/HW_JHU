@@ -3,7 +3,7 @@
 JHED ID: lqi9
 Pratical04
 Usage: python3 mutation caller.py -n normal.bam -c cancer.bam
-This python script process the normal bam file and can bam file. We tested  positions that have coverage larger t    han 20 on both normal.bam and cancer.bam files. Using simplified GATK mutation calling, we caculated the log-like    lihood of these positions and printed out the mutation results.
+This python script process the normal bam file and can bam file. We tested  positions that have coverage larger than 20 on both normal.bam and cancer.bam files. Using simplified GATK mutation calling, we caculated the log-like lihood of these positions and printed out the mutation results.
 '''
 
 import sys
@@ -12,9 +12,21 @@ import pysam
 import math
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-n",type=str)
-parser.add_argument("-c",type=str)
+parser.add_argument("-n",default = 'normal.bam',help = 'Normal',type=str)
+parser.add_argument("-c",default = 'cancer.bam',help = 'Cancer',type=str)
 args = parser.parse_args()
+
+#input error checking
+if len(sys.argv) != 5 or sys.argv[1] != '-n' or sys.argv[3] != '-c':
+	print('Please follow usage: python3 mutation_caller.py -n normal.bam -c cancer.bam')
+	sys.exit()
+if not args.n.endswith('bam'):
+	print('Please input a bam file')
+	sys.exit()
+if not args.c.endswith('bam'):
+	print('Please input a bam file')
+	sys.exit()
+
 
 normal  = pysam.AlignmentFile(args.n, 'rb')
 cancer = pysam.AlignmentFile(args.c, 'rb')
@@ -48,7 +60,7 @@ for pileupcolumn in normal.pileup():
                                 else:
                                         p2[pileupcolumn.pos] = pileupread.alignment.query_sequence[pileupread.query_position]
 
-#positions have coverage < 20
+#positions that have coverage < 20
 pos = list(set(cp+np))
 numbers = [[ int(x) for x in pos ]]
 for i in numbers[0]:
@@ -61,7 +73,7 @@ for i in numbers[0]:
 for i in p2.keys():
         if i in p1.keys():
                 p[i] = p2[i]
-print(p)
+#print(p)
 
 
 
@@ -84,7 +96,7 @@ for i in p:
         for j in temp:
                 if like(p[i],j) == max(like(p[i],j) for j in temp):
                         mle[i] = j
-print(mle)
+#print(mle)
 
 #skip pos whoese log likelihood < -50
 pos1 = [] #pos1 contains pos whoese log likelihood >= -50
@@ -95,7 +107,7 @@ for i in p:
 	else:
 		pos1 = pos1 + [i]
 
-print(pos1)
+#print(pos1)
 
 for i in p1:
         if i in pos1:
