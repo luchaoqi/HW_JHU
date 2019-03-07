@@ -28,11 +28,6 @@ output_file = args.o
 f_in = open(input_file,'r')
 f_out = open(output_file,'w')
 
-<<<<<<< HEAD
-=======
-f_in = open('ese_test.txt','r')
-f_out = open('permuted_ese.txt','w')
->>>>>>> fac03fbabcf2c5d0af29f5cfdd8a8978c42d7063
 #read in reach sequence and permute the nucleotides
 for line in f_in:
     dna = line.strip('\n')
@@ -50,7 +45,6 @@ for line in f_in:
     permuted_nuc = ''.join(nuc_list_numpy)
         #write the permuted sequence to the output file named permuted_ese.txt
     f_out.write('{}\n'.format(permuted_nuc))
-<<<<<<< HEAD
 f_in.close()
 f_out.close()
 
@@ -71,23 +65,3 @@ f_out.close()
 #		f2.write( i+ '\n')
 #f1.close()
 #f2.close()
-=======
-f_out.close()
-f_in.close()
-
-f1 = open('ese_test.txt','r')
-f2 = open('permuted_ese.txt','w')
-a = []
-b = []
-for line in f1:
-    a.append(line.strip('\n'))
-for line in f2:
-    b.append(line.strip('\n'))
-f2.truncate()
-for i in a:
-    if i not in b:
-        f2.write(i+'\n')
-
-f1.close()
-f2.close()
->>>>>>> fac03fbabcf2c5d0af29f5cfdd8a8978c42d7063
