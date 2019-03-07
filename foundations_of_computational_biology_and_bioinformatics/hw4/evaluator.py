@@ -9,8 +9,6 @@ import sys
 import argparse
 import pandas as pd
 import numpy as np
-import random
-from scipy.stats import norm
 
 
 #input error checking
