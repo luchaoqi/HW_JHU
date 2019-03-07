@@ -20,36 +20,48 @@ parser.add_argument("-o",required = True,type=str)
 args = parser.parse_args()
 
 
-def main():
-    numpy.random.RandomState(101)
+numpy.random.RandomState(101)
     
-    #take in as input ESE.txt
-    input_file = args.f
-    output_file = args.o
-    f_in = open(input_file,'r')
-    f_out = open(output_file,'w')
+#take in as input ESE.txt
+input_file = args.f
+output_file = args.o
+f_in = open(input_file,'r')
+f_out = open(output_file,'w')
 
-    #read in reach sequence and permute the nucleotides
-    for line in f_in:
-        dna = line.strip('\n')
+#read in reach sequence and permute the nucleotides
+for line in f_in:
+    dna = line.strip('\n')
         
         #separate nucleotides by comma 
-        nuc_list = []
-        for i in dna:
-            nuc_list.append(i)
+    nuc_list = []
+    for i in dna:
+        nuc_list.append(i)
 
         #convert python list to numpy array
-        nuc_list_numpy = numpy.array(nuc_list)
-        numpy.random.shuffle(nuc_list_numpy)
+    nuc_list_numpy = numpy.array(nuc_list)
+    numpy.random.shuffle(nuc_list_numpy)
 
         #join strings into one sequence         
-        permuted_nuc = ''.join(nuc_list_numpy)
-
+    permuted_nuc = ''.join(nuc_list_numpy)
         #write the permuted sequence to the output file named permuted_ese.txt
-        f_out.write('{}\n'.format(permuted_nuc))
-    f_out.close()
-    f_in.close()
+    f_out.write('{}\n'.format(permuted_nuc))
+f_in.close()
+f_out.close()
 
-if __name__=="__main__":
-    main()
+#skip the repeated seq that appear in ese_test.txt if needed run the following code
+#f1 = open(args.f,'r')
+#f2 = open(args.o,'r+')
+#a = []
+#b = []
+#for line in f1:
+#    a.append(line.strip('\n'))
+#for line in f2:
+#    b.append(line.strip('\n'))
+#f2.seek(0)
+#f2.truncate()
 
+#for i in a:
+#	if i not in b:
+#		f2.write( i+ '\n')
+#f1.close()
+#f2.close()
