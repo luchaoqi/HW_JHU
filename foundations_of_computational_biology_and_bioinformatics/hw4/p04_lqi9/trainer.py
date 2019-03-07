@@ -1,6 +1,6 @@
 '''
 Modified trainer.py for pratical04
-Usage: python3 trainer.py -f ese_training.txt -o output_model_file.txt
+Usage: python3 trainer.py -f ESE.txt -o output_model_file.txt
 '''
 import sys
 import pandas as pd
@@ -9,7 +9,7 @@ import argparse
 
 #input error echecking
 if len(sys.argv) != 5 or not sys.argv[1].startswith('-') or not sys.argv[3].startswith('-'):
-	sys.stdout.write('Usage: python3 trainer.py -f your input seq.txt file -o output_model_file.txt \n')
+	sys.stdout.write('Usage: python3 trainer.py -f you input seq.txt file -o output_model_file.txt \n')
 	sys.exit()
 if not sys.argv[2].endswith('.txt'):
 	sys.stdout.write('Please input .txt file\n')
