@@ -7,7 +7,7 @@
 set.seed(101) #pseudo random number generator seed to 101
 numbers  = rbinom(1000,500,0.5) #N = 1000, n = 500, p = 0.5
 
-pvalues = (1-pbinom(numbers, 500, 0.5)) #calculate p-values
+pvalues = (1-pbinom(numbers-1, 500, 0.5)) #calculate p-values
 
 png(file='PvalueHistogram.png')
 hist(pvalues) #add freq = false to get density for y-axis
