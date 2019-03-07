@@ -28,8 +28,6 @@ output_file = args.o
 f_in = open(input_file,'r')
 f_out = open(output_file,'w')
 
-f_in = open('ese_test.txt','r')
-f_out = open('permuted_ese.txt','w')
 #read in reach sequence and permute the nucleotides
 for line in f_in:
     dna = line.strip('\n')
@@ -47,21 +45,23 @@ for line in f_in:
     permuted_nuc = ''.join(nuc_list_numpy)
         #write the permuted sequence to the output file named permuted_ese.txt
     f_out.write('{}\n'.format(permuted_nuc))
-f_out.close()
 f_in.close()
+f_out.close()
 
-f1 = open('ese_test.txt','r')
-f2 = open('permuted_ese.txt','w')
-a = []
-b = []
-for line in f1:
-    a.append(line.strip('\n'))
-for line in f2:
-    b.append(line.strip('\n'))
-f2.truncate()
-for i in a:
-    if i not in b:
-        f2.write(i+'\n')
+#skip the repeated seq that appear in ese_test.txt if needed run the following code
+#f1 = open(args.f,'r')
+#f2 = open(args.o,'r+')
+#a = []
+#b = []
+#for line in f1:
+#    a.append(line.strip('\n'))
+#for line in f2:
+#    b.append(line.strip('\n'))
+#f2.seek(0)
+#f2.truncate()
 
-f1.close()
-f2.close()
+#for i in a:
+#	if i not in b:
+#		f2.write( i+ '\n')
+#f1.close()
+#f2.close()
