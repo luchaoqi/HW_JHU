@@ -9,6 +9,8 @@ import sys
 import argparse
 import pandas as pd
 import numpy as np
+import random
+from scipy.stats import norm
 
 
 #input error checking
@@ -35,17 +37,15 @@ model = open(args.m, 'rb')
 test = open(args.t, 'rb')
 decoy = open(args.d, 'rb')
 model_tab = np.loadtxt(model, delimiter='\t')
-def calcSeqScore(x, y):
-   Score = 0 
+def calcSeqScore(line, model_tab):
+   seqScore = 0 
    rowIndex = ['A', 'G', 'C', 'T']
-   for col in range(0, len(x)): 
-      row = rowIndex.index(x[col])
-      nucScore = y[row][col]
+   for col in range(0, len(line)): 
+      row = rowIndex.index(line[col])
+      nucScore = model_tab[row][col]
       nucScore = math.log2(nucScore)
-      Score = Score + nucScore
-   return Score
-
-
+      seqScore = seqScore + nucScore
+   return seqScore
 
 testArray = []
 testScoreArray = []
@@ -55,17 +55,16 @@ for line in test.readlines():
    testArray.append(line)
    seqScore = calcSeqScore(line, model_tab)
    testScoreArray.append(seqScore)
-
 decoyArray = []
 decoyScoreArray = []
 for line in decoy.readlines():
    line = line.strip()
    line = line.decode("utf-8")
+
    if line not in testArray:
       decoyArray.append(line)
       seqScore = calcSeqScore(line, model_tab)
       decoyScoreArray.append(seqScore)
-
 totalScore = testScoreArray + decoyScoreArray
 uniqueScore = list(set(totalScore))
 uniqueScore.sort()
@@ -78,15 +77,14 @@ testScoreArray = np.array(testScoreArray)
 decoyScoreArray = np.array(decoyScoreArray)
 
 for score in uniqueScore: 
-   TP.append(sum(testScoreArray >= score))
-   FP.append(sum(decoyScoreArray >= score))
-   TN.append(len(decoyScoreArray) - sum(decoyScoreArray >= score))
-   FN.append(len(testScoreArray)- sum(testScoreArray >= score))
-   FDR.append(FP[-1] / (FP[-1] + TP[-1]))
-#   if FP[-1]+TP[-1] == 0:
-#      FDR.append('0')
-#   else:
-#      FDR.append(FP[-1] / (FP[-1] + TP[-1]))
+   TP.append(sum(testScoreArray > score))
+   FP.append(sum(decoyScoreArray > score))
+   TN.append(len(decoyScoreArray) - sum(decoyScoreArray > score))
+   FN.append(len(testScoreArray)- sum(testScoreArray > score))
+   if FP[-1]+TP[-1] == 0:
+      FDR.append('NaN')
+   else:
+      FDR.append(FP[-1] / (FP[-1] + TP[-1]))
 
 dataframe_dict = {"#thresh":uniqueScore, "TP":TP, "FP":FP, "TN":TN, "FN":FN, "FDR":FDR}
 dataframe_return = pd.DataFrame(dataframe_dict)
