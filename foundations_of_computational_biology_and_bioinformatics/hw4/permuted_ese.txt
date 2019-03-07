@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 AAAGTG
 GAAGTG
 GAAAGG
@@ -86,3 +87,5 @@ AGCATA
 AGATGA
 TACGAA
 GAAGTA
+=======
+>>>>>>> fac03fbabcf2c5d0af29f5cfdd8a8978c42d7063

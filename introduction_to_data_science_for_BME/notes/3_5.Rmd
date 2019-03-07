@@ -1,0 +1,13 @@
+create shinny app
+
+
+shinyapps.io
+
+
+install.packages('rsconnect')
+
+library(shiny)
+
+shinny app quiz Thursday
+
+
