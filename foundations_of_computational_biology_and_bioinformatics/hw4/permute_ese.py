@@ -2,7 +2,7 @@
 JHED ID: lqi9
 Pratical number: p04
 Script that generates decoy ESE binding site sequences.
-Usage: python3 permute_ese.py -f ESE.txt -o permuted_ese.txt -t trusted_ESE.txt
+Usage: python3 permute_ese.py -f ESE.txt -o permuted_ese.txt 
 '''
 
 import argparse
@@ -17,7 +17,6 @@ if not sys.argv[1].startswith('-') or not sys.argv[2].endswith('.txt') or not sy
 parser = argparse.ArgumentParser()
 parser.add_argument("-f",required = True,type=str)
 parser.add_argument("-o",required = True,type=str)
-parser.add_argument("-t",type= str)
 args = parser.parse_args()
 
 
@@ -51,22 +50,6 @@ def main():
     f_out.close()
     f_in.close()
 
-f = open(ESE.txt,'r')
-f_out = open(args.o,'r')
-a = []
-b = []
-for line in f_out:
-	a.append(line.strip('\n'))
-	for line in f:
-		b.append(line.strip('\n')
-f_out.close()
-f.close()
-n = 0
-for i in b:
-	if i in a:
-	n = n+1
-sys.stdout.writ(n)
-    
 if __name__=="__main__":
     main()
 
