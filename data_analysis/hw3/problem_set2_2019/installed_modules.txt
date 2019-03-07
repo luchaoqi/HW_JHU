@@ -1,0 +1,12 @@
+import sys
+import os
+import argparse
+import numpy as np
+import pandas as pd
+
+form scipy.stats import ttest_ind
+from sklearn.svm import SVC
+from sklearn.decomposition import PCA
+from matplotlib import pyplot as plt
+
+from sklearn.cluster import KMeans
