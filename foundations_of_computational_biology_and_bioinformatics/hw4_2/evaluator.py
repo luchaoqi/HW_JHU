@@ -50,17 +50,17 @@ def get_score(inputfile,model):
 
 			# error detection
 			if len(seqlist)!=modellen:
-				sys.stderr.write('Sequence error: Input sequence {0} length is not consistant with model\n'.format(seq.rstrip()))
+				sys.stderr.write('Input sequence {0} length not consistant with model\n'.format(seq.rstrip()))
 				continue
 			if len(set(seqlist)|set(['A','G','C','T']))>len(['A','G','C','T']):
-				sys.stderr.write('Sequence error: Input sequence {0} contains unrecognized base\n'.format(seq.rstrip()))
+				sys.stderr.write('Unrecognized base in sequenc {0}\n'.format(seq.rstrip()))
 				continue
 			prob = 0
 			for pos in range(len(seqlist)):
 				base = seqlist[pos]
 				fracstr = model.ix[base,pos].split('/')
 				frac = (float(fracstr[0])+1)/(float(fracstr[1])+4)
-				prob = prob + math.log2(frac)
+				prob = round((prob + math.log2(frac)),3)
 			scorelist.append(prob)
 		return(scorelist)
 
@@ -90,7 +90,7 @@ def get_fdr(testscore,permutescore):
 		fplist.append(fp)
 		tnlist.append(tn)
 		fnlist.append(fn)
-		fdrlist.append(fp/(tp+fp))
+		fdrlist.append(round(fp/(tp+fp),3))
 	ret = {'#thresh':sortscore,'TP': tplist,'FP':fplist,'TN':tnlist,'FN':fnlist,'FDR':fdrlist}
 	ret = pd.DataFrame(ret)
 	return(ret)
@@ -115,11 +115,7 @@ def main():
 	permutescore = get_score(args.permutefile,model)
 
 	fdrtable = get_fdr(testscore,permutescore)
-	print(fdrtable)
-#	sys.stdout.write('#thresh\tTP\tFP\tTN\tFN\tFDR\n')
-#	for index, row in fdrtable.iterrows():
-#		sys.stdout.write('{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n'.format(row[0],row[1],row[2],row[3],row[4],row[5]))
-
+	fdrtable.to_csv(sys.stdout,sep = '\t')
 	return
 
 if __name__=='__main__':
