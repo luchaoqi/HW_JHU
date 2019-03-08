@@ -11,7 +11,7 @@ import numpy
 
 #error checking
 if not sys.argv[1].startswith('-') or not sys.argv[2].endswith('.txt') or not sys.argv[3].startswith('-') or not sys.argv[4].endswith('.txt'):
-	sys.stdout.write('Usage: python3 permute_ese.py -f ese_test.txt -o permuted_ese.txt  \n')
+	sys.stdout.write('Usage: python3 permute_ese.py -f ese_test.txt -o permuted_ese.txt (-t ese_test.txt/ trusted_ESE.txt) if needed \n')
 	sys.exit()
 
 parser = argparse.ArgumentParser()
@@ -50,8 +50,8 @@ def main():
 	f_in.close()
 	f_out.close()
 
-#skip the repeated seq that appear in ese_test.txt if needed run the following code
-	f1 = open(args.f,'r')
+#skip the repeated seq that appear in trusted ESE
+	f1 = open(args.t,'r')
 	f2 = open(args.o,'r+')
 	a = []
 	b = []
@@ -62,8 +62,8 @@ def main():
 	f2.seek(0)
 	f2.truncate()
 
-	for i in a:
-		if i not in b:
+	for i in b:
+		if i not in a:
 			f2.write( i+ '\n')
 	f1.close()
 	f2.close()
