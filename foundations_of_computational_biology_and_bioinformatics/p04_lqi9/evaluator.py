@@ -1,12 +1,9 @@
 '''
-
 LuchaoQi 
 JHED ID:lqi9
 Pratical04
 Usage: python3 evaluator.py -m output_model_file.txt -t ese_test.txt -d permuted_ese.txt
 Evaluate the performance of discriminating between trusted ESEs and decoys. It will also give give FDRs. 
-
-
 '''
 
 #!/usr/bin/env python
