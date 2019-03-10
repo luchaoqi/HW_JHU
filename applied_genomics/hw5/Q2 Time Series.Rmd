@@ -1,0 +1,56 @@
+```{r}
+library(TCseq)
+raw_dat = read.table('expression.txt',header = 1,row.names = 'name')
+raw_dat = as.matrix(raw_dat)
+dat <- timeclust(raw_dat, algo = "cm", k = 2, standardize = TRUE,iter.max=10) #algorithm : fuzzy c means
+p <- timeclustplot(dat, categories="time points", cols = 1,axis.text.size = 11)
+cluster <- clustCluster(dat)
+```
+
+```{r}
+raw_dat = read.table('expression.txt',header = 1,row.names = 'name')
+raw_dat = as.matrix(raw_dat)
+dat = kmeans(raw_dat,iter.max=10,centers = 2)
+dat
+```
+
+```{r}
+sort(dat$cluster)
+```
+
+# ```{r}
+# cluster1 = c()
+# cluster2 = c()
+# j = 0
+# for (i in dat2$cluster){
+#   j = j +1
+#   if (i == 2){cluster1 = c(cluster1,dat@cluster[j])}
+#   else {cluster2 = c(cluster2,dat@cluster[j])}
+# }
+# ```
+
+
+```{r}
+pca = prcomp(raw_dat,scale. = TRUE)
+pca$rotation
+```
+
+
+```{r}
+library(tidyverse)
+
+dftemp = merge(raw_dat,as.data.frame(dat$cluster),by =0,all.x=T) #based on cluster from part(a)
+df = dftemp[,-1]
+rownames(df) = c(dftemp[,1])
+# library(ggfortify)
+# autoplot(prcomp(df), data = df, colour = 'dat$cluster')
+
+library(cluster)
+autoplot(fanny(df[-11], 2), frame = TRUE)
+```
+
+
+
+
+
+
