@@ -4,8 +4,8 @@ from sklearn.cluster import KMeans
 
 a = open('expression.txt','r')
 dat = pd.read_csv(a, delimiter = '\t')
-
-
+kmeans = KMeans(n_clusters=2)
+kmeans.fit(dat.drop(dat.columns[0],axis=1))
 
 
 
