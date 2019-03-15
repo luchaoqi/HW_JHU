@@ -1,0 +1,128 @@
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+
+
+```{r}
+set.seed(100)
+raw_dat = read.table('data1.txt')
+raw_dat2 = read.table('data2.txt')
+
+#5 times
+n = 5
+dat = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat,1000))
+a = table(factor(y,levels = 1:15))
+dat[i,] = a
+}
+
+dat2 = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat2,1000))
+a = table(factor(y,levels = 1:15))
+dat2[i,] = a
+}
+
+#reject
+r = c()
+for (i in seq(dim(dat)[2])){
+  if (t.test(dat[,i],dat2[,i],paired = 1)$p.value < 0.05){
+    r = c(r,i)
+  }
+}
+r
+```
+
+
+
+
+```{r}
+#10 times
+n = 10
+dat = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat,1000))
+a = table(factor(y,levels = 1:15))
+dat[i,] = a
+}
+
+dat2 = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat2,1000))
+a = table(factor(y,levels = 1:15))
+dat2[i,] = a
+}
+
+#reject
+r = c()
+for (i in seq(dim(dat)[2])){
+  if (t.test(dat[,i],dat2[,i],paired = 1)$p.value < 0.05){
+    r = c(r,i)
+  }
+}
+r
+```
+
+
+
+
+
+```{r}
+#5 times
+n = 5
+m = 5000
+dat = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat,m))
+a = table(factor(y,levels = 1:15))
+dat[i,] = a
+}
+
+dat2 = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat2,m))
+a = table(factor(y,levels = 1:15))
+dat2[i,] = a
+}
+
+#reject
+r = c()
+for (i in seq(dim(dat)[2])){
+  if (t.test(dat[,i],dat2[,i],paired = 1)$p.value < 0.05){
+    r = c(r,i)
+  }
+}
+r
+
+
+
+
+#10 times
+n = 10
+m = 5000
+dat = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat,m))
+a = table(factor(y,levels = 1:15))
+dat[i,] = a
+}
+
+dat2 = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat2,m))
+a = table(factor(y,levels = 1:15))
+dat2[i,] = a
+}
+
+#reject
+r = c()
+for (i in seq(dim(dat)[2])){
+  if (t.test(dat[,i],dat2[,i],paired = 1)$p.value < 0.05){
+    r = c(r,i)
+  }
+}
+r
+```

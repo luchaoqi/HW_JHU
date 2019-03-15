@@ -1,0 +1,474 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+## Q 1a
+Shell:
+```
+awk '$3 == "gene"&& /protein_coding/' Homo_sapiens.GRCh38.87.gtf > 1a.txt
+python3 1a.py | sort -nk1
+```
+Python:
+```
+  1 import pandas as pd
+  2 f = open('1a.txt','r')
+  3 a = []
+  4 for lines in f:
+  5         line = lines.strip().rstrip('\n').split('\t')
+  6         a.append(line[0])
+  7 dat = pd.Series(a)
+  8 print(dat.value_counts())
+```
+Result:
+```
+Genes        Numbers
+1             2052
+2             1255
+3             1076
+4              751
+5              876
+6             1045
+7              906
+8              676
+9              781
+10             732
+11            1276
+12            1034
+13             327
+14             623
+15             597
+16             866
+17            1197
+18             270
+19            1470
+20             544
+21             233
+22             438
+```
+
+\pagebreak
+
+## Q 1b  
+Shell:
+```
+awk '$3 == "gene" && /protein_coding/' Homo_sapiens.GRCh38.87.gtf > protein_coding.txt
+```
+Python:
+```
+  1 import numpy as np
+  2 f = open('protein_coding.txt','r')
+  3 a  = []
+  4 for lines in f:
+  5         line  = lines.strip().rstrip('\n').split('\t')
+  6         a.append(int(line[4])-int(line[3])+1)
+  7 print('Max: {0}'.format(np.max(a)))
+  8 print('Min: {0}'.format(np.min(a)))
+  9 print('Mean: {0}'.format(np.mean(a)))
+ 10 print('Std: {0}'.format(np.std(a)))
+```
+Results:
+```
+Max: 2304997
+Min: 78
+Mean: 67025.36280747458
+Std: 130396.57914493038
+```
+
+\pagebreak
+
+## Q 1c
+Shell:
+```
+awk '$3 == "exon" && /transcript_name/' Homo_sapiens.GRCh38.87.gtf | tr ';' '\t'| cut -f 11 > exon.txt
+```
+Python:
+```
+  1 #awk '$3 == "transcript" && /protein_coding/' Homo_sapiens.GRCh38.87.gtf | t    r ';' '\t'| cut -f 9 > exon.txt
+  2 import numpy as np
+  3 import pandas as pd
+  4 
+  5 f = open('exon.txt','r')
+  6 
+  7 
+  8 a = []
+  9 for lines in f:
+ 10         line = lines.strip().rstrip('\n').split("\"")
+ 11         a.append(line[1])
+ 12 dat = pd.Series(a)
+ 13 #print(dat.value_counts())
+ 14 b = dat.value_counts().tolist()
+ 15 print('Max: {0}'.format(np.max(b)))
+ 16 print('Min: {0}'.format(np.min(b)))
+ 17 print('Mean: {0}'.format(np.mean(b)))
+ 18 print('Std: {0}'.format(np.std(b)))
+```
+Result:
+```
+Max: 363
+Min: 1
+Mean: 5.9704598943445015
+Std: 6.78526409135388
+```
+
+
+\pagebreak
+
+## Q 2a
+
+
+```{r}
+set.seed(100)
+raw_dat = read.table('expression.txt',header = 1,row.names = 'name')
+raw_dat = as.matrix(raw_dat)
+dat = kmeans(t(scale(t(raw_dat))),iter.max=20,centers = 3)
+dat
+```
+
+
+Determine the background expression level by taking the average.  
+
+```{r}
+apply(raw_dat,2,mean)
+```
+
+By looking at the cluster means shown before, we can see:  
+
+Cluster1:decreasing expression  
+Cluster3:increasing expression  
+
+Genes of different clusters are shown as below:  
+Decreasing: gene_7, gene_14, .... gene_98  
+Increasing: gene_5, gene_10, .... gene_100
+```{r}
+sort(dat$cluster)
+```
+
+
+Visulization:  
+
+```{r}
+library(TCseq)
+set.seed(100)
+raw_dat = read.table('expression.txt',header = 1,row.names = 'name')
+raw_dat = as.matrix(raw_dat)
+dat <- timeclust(raw_dat, algo = "cm", k = 3, standardize = TRUE,iter.max=20) 
+#algorithm : fuzzy c means
+p <- timeclustplot(dat, categories="time points", cols = 1,axis.text.size = 11)
+cluster <- clustCluster(dat)
+```
+
+
+
+\pagebreak
+
+
+## Q 2b
+
+
+
+```{r}
+pca = prcomp(t(raw_dat), scale. = TRUE)
+pca$rotation[,1:2]
+#screeplot(pca, type="lines",col=3)
+```
+
+
+```{r}
+library(tidyverse)
+library(ggfortify)
+library(cluster)
+dftemp = merge(raw_dat,as.data.frame(dat@cluster),by =0,all.x=T) #based on cluster from part(a)
+df = dftemp[,-1]
+rownames(df) = c(dftemp[,1])
+# library(ggfortify)
+# autoplot(prcomp(df), data = df, colour = 'dat$cluster')
+autoplot(fanny(df[-11], 3), frame = TRUE)
+```
+
+
+\pagebreak
+
+
+
+## Q 2c
+
+*web tool: https://software.broadinstitute.org/morpheus/*
+
+![](C:\Users\lcqi\OneDrive\Desktop\Courses\applied_genomics\hw5\pictures\2c.png)
+
+
+\pagebreak
+
+## Q 3a  
+
+```{r warning = F, message=F}
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+set.seed(100)
+n =10
+raw_dat = read.table('data1.txt')
+dat = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat,1000))
+a = table(factor(y,levels = 1:15))
+dat[i,] = a
+}
+#relative abundance
+dat/1000
+```
+
+```{r}
+dat = dat/1000
+qplot(x = apply(dat, 2, mean),y = apply(dat, 2, var)) + 
+  labs(title = 'sampling 1000 rows',x = 'relative abundance',y='variance')
+#data.frame(apply(dat, 2, mean),apply(dat, 2, var))
+```
+
+
+\pagebreak
+
+
+
+## Q 3b  
+
+
+
+```{r}
+set.seed(100)
+n =10
+raw_dat = read.table('data1.txt')
+dat = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat,5000))
+a = table(factor(y,levels = 1:15))
+dat[i,] = a
+}
+dat = dat/5000
+qplot(x = apply(dat, 2, mean),y = apply(dat, 2, var)) + 
+  labs(title = 'sampling 5000 rows',x = 'relative abundance',y='variance')
+#data.frame(apply(dat, 2, mean),apply(dat, 2, var))
+```
+
+
+\pagebreak
+
+
+## Q 3c  
+
+The variance is greater in (a) because we sampled more times in (b) than (a), we get a better approximation of our sample in (b). Also we probably have more replicates in (b). There is a positive relationship between the variance and relative abundance. The variance becomes large when the relative abundance becomes huge.  
+
+
+\pagebreak
+
+
+## Q 4a  
+
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+
+
+
+```{r}
+set.seed(100)
+raw_dat = read.table('data1.txt')
+raw_dat2 = read.table('data2.txt')
+
+#5 times
+n = 5
+dat = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat,1000))
+a = table(factor(y,levels = 1:15))
+dat[i,] = a
+}
+dat = dat/1000
+dat2 = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat2,1000))
+a = table(factor(y,levels = 1:15))
+dat2[i,] = a
+}
+dat2 =dat2/1000
+#test
+r = c()
+for (i in seq(dim(dat)[2])){
+  if (t.test(dat[,i],dat2[,i],paired = 1)$p.value < 0.05){
+    r = c(r,i)
+  }
+}
+r
+```
+
+gene_1 and gene_3 are significantly differentially expressed at the 0.05 level.
+
+
+\pagebreak
+
+
+## Q 4b  
+
+```{r}
+#10 times
+set.seed(100)
+n = 10
+dat = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat,1000))
+a = table(factor(y,levels = 1:15))
+dat[i,] = a
+}
+dat = dat/1000
+dat2 = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat2,1000))
+a = table(factor(y,levels = 1:15))
+dat2[i,] = a
+}
+dat2 =dat2/1000
+#reject
+r = c()
+for (i in seq(dim(dat)[2])){
+  if (t.test(dat[,i],dat2[,i],paired = 1)$p.value < 0.05){
+    r = c(r,i)
+  }
+}
+r
+```
+
+gene_1, gene_2 and gene_3 are now significant at the 0.05 level.
+
+\pagebreak
+
+
+
+## Q 4c  
+
+
+
+```{r}
+#5 times
+set.seed(100)
+n = 5
+m = 5000
+dat = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat,m))
+a = table(factor(y,levels = 1:15))
+dat[i,] = a
+}
+dat = dat/m
+dat2 = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat2,m))
+a = table(factor(y,levels = 1:15))
+dat2[i,] = a
+}
+dat2 = dat2/m
+#reject
+r = c()
+for (i in seq(dim(dat)[2])){
+  if (t.test(dat[,i],dat2[,i],paired = 1)$p.value < 0.05){
+    r = c(r,i)
+  }
+}
+r
+
+
+
+
+#10 times
+n = 10
+m = 5000
+dat = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat,m))
+a = table(factor(y,levels = 1:15))
+dat[i,] = a
+}
+dat = dat/m
+dat2 = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat2,m))
+a = table(factor(y,levels = 1:15))
+dat2[i,] = a
+}
+dat2 = dat2/m
+#reject
+r = c()
+for (i in seq(dim(dat)[2])){
+  if (t.test(dat[,i],dat2[,i],paired = 1)$p.value < 0.05){
+    r = c(r,i)
+  }
+}
+r
+```
+
+From part a, gene_1, gene_3 and gene_8 are significant.  
+From part b, gene_1, gene_2, gene_3, gene_8 and gene_15 are significant.
+
+\pagebreak
+
+
+## Q 4d
+
+```{r}
+dat1 = table(raw_dat)
+dat2 = table(raw_dat2)
+dat1 != dat2
+```
+
+For actually different genes relative abundance, we got genes 1, 2, 3, 8, 12 and 15.  
+
+Additional simple simulation experiments:  
+
+
+```{r}
+n = 20
+m = 10000
+dat = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat,m))
+a = table(factor(y,levels = 1:15))
+dat[i,] = a
+}
+dat = dat/m
+dat2 = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat2,m))
+a = table(factor(y,levels = 1:15))
+dat2[i,] = a
+}
+dat2 = dat2/m
+#reject
+r = c()
+for (i in seq(dim(dat)[2])){
+  if (t.test(dat[,i],dat2[,i],paired = 1)$p.value < 0.05){
+    r = c(r,i)
+  }
+}
+r
+```
+
+
+After sampling 10,000 rows 20 times(increasing both number of rows and times), we found genes 1, 2, 3, 8, 12 and 15 are differentially exrpessed.  
+From part a to part c, we sampled more times than before which means we have a better approximation of our sample. Therefore, there are more diffrentially expressed genes found when we increase the sample size.
+
+
+
+
+
+
+
+
+
+
+
+

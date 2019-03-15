@@ -1,0 +1,37 @@
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+
+```{r}
+set.seed(100)
+n =10
+raw_dat = read.table('data1.txt')
+dat = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat,1000))
+a = table(factor(y,levels = 1:15))
+dat[i,] = a
+}
+qplot(x = apply(dat, 2, mean),y = apply(dat, 2, var)) + 
+  labs(title = 'sampling 1000 rows',x = 'mean',y='variance')
+#data.frame(apply(dat, 2, mean),apply(dat, 2, var))
+```
+
+
+
+```{r}
+set.seed(100)
+n =10
+raw_dat = read.table('data1.txt')
+dat = matrix(0,n,15,byrow = 1)
+for (i in seq(n)){
+y = unlist(sample_n(raw_dat,5000))
+a = table(factor(y,levels = 1:15))
+dat[i,] = a
+}
+qplot(x = apply(dat, 2, mean),y = apply(dat, 2, var)) + 
+  labs(title = 'sampling 5000 rows',x = 'mean',y='variance')
+#data.frame(apply(dat, 2, mean),apply(dat, 2, var))
+```
