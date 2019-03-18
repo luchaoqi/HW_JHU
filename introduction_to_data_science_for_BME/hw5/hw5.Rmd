@@ -1,0 +1,31 @@
+---
+header-includes: \usepackage{bbm}
+output:
+  html_document: default
+  pdf_document: default
+---
+## Problem 3  
+
+### a  
+
+This is the probability that at most one parent have contracted influenza. So the probability either the
+mother alone, the father alone, or neither parent has contracted the flu.  
+
+### b  
+
+Let F be the event that the father contracted cryptosporidiosis and M be the event that the mother
+contracted cryptosporidiosis. Using this notation, we are given P($F \cup  M$) = 0.21, P($F \cap M$) = 0.05,
+and P(F) = 0.09. Note that the event in which either the mother or the father has contracted
+cryptosporidiosis is denoted by $F \cup M$, or equivalently, the event in which least one parent contracted
+the disease. We are given P($F \cup M$) is 0.21.  
+
+
+### c  
+
+
+Using the same notation as in part b,  
+
+$M \cap F^c$ = {mother contracted cryptosporidiosis, but father has not}
+We know that  
+
+P($M \cap F^c$) = P(M) - P($M \cap F$) = 0.17 - 0.05 = 0.12
