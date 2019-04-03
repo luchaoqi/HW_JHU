@@ -45,11 +45,14 @@ for i in range(len(s1)):
         s3.append('F')
     else:
         s3.append('L')
+px = s1[-1]*0.05+s2[-1]*0.05
 print(s1)
 print(s2)
 print(s3)
+pf1 = s1
+pf2 = s2
 #backward
-seq = 'HTTTT'
+seq = 'HHTTT'
 s1 = [0.05]
 s2 = [0.05]
 s3 = []
@@ -63,6 +66,28 @@ for i in range(len(seq)):
 	sum2 = s12s2 + s22s2
 	s1.append(sum1)
 	s2.append(sum2)
-	
+s1.reverse()
+s2.reverse()
 print(s1)
 print(s2)
+
+pb1 = s1
+pb2 = s2
+
+s1 = []
+s2 = []
+for i in range(len(pb1)):
+	s1.append(pf1[i]*pb1[i]/px)
+	s2.append(pf2[i]*pb2[i]/px)
+print('posterio')
+print(s1)
+print(s2)
+
+s3 = []
+for i in range(len(s1)):
+	if s1[i] > s2[i]:
+		s3.append('F')
+	else:
+		s3.append('L')
+print(s3)
+
