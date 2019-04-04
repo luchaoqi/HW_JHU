@@ -20,6 +20,7 @@ for i in range(len(s1)):
 		s3.append('F')
 	else:
 		s3.append('L')
+print('viterbi:')
 print(s1)
 print(s2)
 print(s3)
@@ -45,7 +46,18 @@ for i in range(len(s1)):
         s3.append('F')
     else:
         s3.append('L')
+
+
+
+
+
 px = s1[-1]*0.05+s2[-1]*0.05
+
+
+
+
+
+print('forward:')
 print(s1)
 print(s2)
 print(s3)
@@ -67,9 +79,20 @@ for i in range(len(seq)):
 	s1.append(sum1)
 	s2.append(sum2)
 s1.reverse()
+#s1[::-1]
 s2.reverse()
+print('backward:')
 print(s1)
 print(s2)
+s3 = []
+for i in range(len(s1)):
+	if s1[i] > s2[i]:
+		s3.append('F')
+	else:
+		s3.append('L')
+print(s3)
+
+
 
 pb1 = s1
 pb2 = s2
@@ -79,7 +102,7 @@ s2 = []
 for i in range(len(pb1)):
 	s1.append(pf1[i]*pb1[i]/px)
 	s2.append(pf2[i]*pb2[i]/px)
-print('posterio')
+print('posterio:')
 print(s1)
 print(s2)
 
