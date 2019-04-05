@@ -1,17 +1,21 @@
 ---
 header-includes: \usepackage{bbm}
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
-## Problem 3  
 
-### a  
+## Problem 3  
+  
+  
+a.  
 
 This is the probability that at most one parent have contracted influenza. So the probability either the
 mother alone, the father alone, or neither parent has contracted the flu.  
 
-### b  
+  
+  
+b. 
 
 Let F be the event that the father contracted cryptosporidiosis and M be the event that the mother
 contracted cryptosporidiosis. Using this notation, we are given P($F \cup  M$) = 0.21, P($F \cap M$) = 0.05,
@@ -19,13 +23,217 @@ and P(F) = 0.09. Note that the event in which either the mother or the father ha
 cryptosporidiosis is denoted by $F \cup M$, or equivalently, the event in which least one parent contracted
 the disease. We are given P($F \cup M$) is 0.21.  
 
+  
+  
+c.  
 
-### c  
 
-
-Using the same notation as in part b,  
+Using the same notation as in part b,
 
 $M \cap F^c$ = {mother contracted cryptosporidiosis, but father has not}
-We know that  
 
-P($M \cap F^c$) = P(M) - P($M \cap F$) = 0.17 - 0.05 = 0.12
+We know that
+
+P($M \cap F^c) = P(M) - P(M \cap F) = 0.17 - 0.05 = 0.12$
+  
+  
+
+d.    
+
+
+
+$P(F \cup M) = P(F) + P(M) - P(F \cap M)$.  
+Thus, solving for P(M), we get  
+
+$P(M) = P(F \cap M) + P(F \cap M) - P(F) = 0.21 + 0.05 - 0.09 = 0.17$
+  
+  
+e.   
+
+
+$P(F^c \cap M^c) = 1 - P(F \cup M) = 1 - 0.21 = 0.79$
+
+
+f.  
+
+
+$P(F \cap M^c) = P(F) - P(M \cap F) = 0.09 - 0.05 = 0.04$
+
+
+## Problem 7
+
+(1) Since h(x)>0 for all x,$\sum h(i)>0$ and thus p(x)>0.  
+
+(2) \begin{align*}
+\sum^{I}_{x=1}p(x) &= \sum^{I}_{x = 1} h(x)/ \sum^{I}_{i=1} h(i)\\
+&= \frac{\sum h(x)}{\sum h(x)}\\
+&= 1
+\end{align*}
+
+So p(x) is a valid pmf.
+
+## Problem 8
+
+1. For all x, h(x) >0 and c>0, thus f(x)>0  
+2.
+\begin{align*}
+\int ^{\infty }_{-\infty }f\left( x\right) &=\int ^{\infty }_{-\infty }h\left( x\right) /c \\
+&= \dfrac {\int ^{\infty }_{-\infty }h\left( x\right) }{\int ^{\infty }_{-\infty }h\left( x\right) } \\ 
+&=1
+\end{align*}
+
+
+
+## Problem 9  
+
+a.  
+\begin{align*}
+\int^{1}_{0}f(x)dx &= kx |^{1}_{0} \\
+&= k =1
+\end{align*}
+
+So k = 1.  
+
+```{r}
+x <- c(-2, 0, 0, 1, 1, 2)
+y <- c(0, 0, 1, 1, 0, 0)
+plot(x,y, "l", xlim = c(-2,2), ylim = c(0,2),
+main = "Uniform Density", xlab = "x", ylab = "f(x)")
+```
+
+
+
+b.  
+
+$p=\int ^{0.7}_{0.1}f\left( x\right) dx=0.7-0.1=0.6$
+  
+  
+c.  
+
+```{r}
+lb <- 0.1 # Lowerbound
+ub <- 0.7 # Upperbound
+punif(ub) - punif(lb)
+```
+
+For general a and b, we have P = b - a.  
+
+d.  
+
+\begin{align*}
+F\left( x\right) &=p( X < x) \\
+&=\int ^{x}_{0}f\left( y\right) dy \\
+&= y|^{x}_{0} = x
+\end{align*}
+
+```{r}
+x = c(0,1)
+y = c(0,1)
+plot(x,y,'l')
+```
+
+e.  
+
+Let m denote the median. By definition of median, P(X < m) = F(m) = 0.5. From part (d) above, we know
+that F(x) = x, implying that m = 0.5. In the context of our problem, the median of 0.5 means that the
+probability of individuals having less than 50% of their skin covered in freckles is 0.5.  
+
+f.  
+
+The 95th percentile is the value x such that F(x) = 0.95. From part (d), we know that F(x) = x, implying
+that the 95th percentile is given by x = 0.95. In the context of this problem, the 95th percentile means that
+the probability of a randomly drawn subject having less that 95% of their skin covered in freckles is 0.95.  
+
+g.  
+
+The uniform distribution is probably not a reasonable distribution for the proportion of freckles on subjects
+in a given population as it should not be equally likely to have over 50% of your skin covered in freckles as it
+is to have less than 50% of your skin covered in freckles.
+
+
+## Problem 12
+a.  
+
+  1. $e^x > 0 for all x, and 1+ e^x >0, thus pdf > 0 .$  
+  
+  2. 
+  \begin{align*}
+  \int^{\infty}_{-\infty } \frac{e^{-x}}{(1+e^{-x})^2}dx &= \int^{1}_\infty - \frac{1}{u^2}du \\
+  &= \frac{1}{u} | ^1_\infty \\&= 1-0 =1
+  \end{align*}
+b.  
+
+Same as a:  
+$$ F(x) = \frac{1}{u}|^{1+e^{-x}}_\infty = \frac{1}{1+e^{-x}}$$  
+
+
+c. 
+
+$$F(0) = \frac{1}{e^{-0}} = 1/2$$
+So 0 is the median of this distribution.In the context of this problem, a median of 0 means that the median
+cancer risk is 0.  
+
+d. 
+
+To find to value x such that F(x) = p:  
+\begin{align*}
+\frac{1}{1+e^{-x}} &= p \\
+e^{-x} &= 1/p -1\\
+x &= log(\frac{p}{1-p})
+\end{align*}
+
+## Problem 14
+
+a. 
+
+\begin{align*}
+\int^1_0 cx^k dx &=  \frac{c}{k+1}x^{k+1} | ^1_0 \\
+&= \frac{c}{k+1} =1\\
+c &= k+1
+\end{align*}
+
+
+b. 
+\begin{align*}
+F(x) &= \int^x_0 (k+1) y ^k dy \\ &= x^{k+1} |^x_0 \\
+&= x^{k+1}
+\end{align*}
+
+c. 
+
+$p =  x^{k+1} \to x = p^{1/(k+1)}$  
+
+d.  
+$$P(a<x<b) = \int ^b_a (k+1)x^k dx  \\ =  x^{k+1}  | ^b_a = b^{k+1} - a^{k+1}$$
+
+
+## Problem 15  
+
+
+a. 
+
+$1 = \int ^{\infty}_0 cexp(\frac{-x}{2.5})dx = -2.5 cexp(\frac{-x }{2.5})|^\infty_0 =2.5c$  
+So we know c = 2/5.  
+
+b. 
+
+$F(x) =\int^x_0 \frac{1}{2.5} exp(\frac{-y}{2.5})dy = -exp(\frac{-y}{2.5}) |^x_0 = 1- exp(-x/2.5)$  
+
+c. 
+
+$S(x)  = 1 - F(x)  = exp(-x/2.5)$  
+
+d. 
+
+
+$S(11) = exp(\frac{-11}{2.5}) = 0.012$  
+
+e. 
+
+$F(x) =  0.5 \to 0.5 = exp(\frac{-x }{2.5}) \to x = -2.5log0.5$
+
+
+
+
+
+

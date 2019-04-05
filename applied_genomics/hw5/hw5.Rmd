@@ -178,6 +178,9 @@ pca$rotation[,1:2]
 library(tidyverse)
 library(ggfortify)
 library(cluster)
+library(plotly)
+pca = prcomp(t(raw_dat), scale. = TRUE)
+# PCA = pca$rotation[,1:2]
 dftemp = merge(raw_dat,as.data.frame(dat@cluster),by =0,all.x=T) #based on cluster from part(a)
 df = dftemp[,-1]
 rownames(df) = c(dftemp[,1])
