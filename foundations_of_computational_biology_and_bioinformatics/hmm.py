@@ -53,6 +53,8 @@ for i in range(len(s1)):
 
 px = s1[-1]*0.05+s2[-1]*0.05
 
+print('px:')
+print(px)
 
 
 
@@ -114,3 +116,37 @@ for i in range(len(s1)):
 		s3.append('L')
 print(s3)
 
+
+
+
+print('baum welch')
+ETf = 0
+for i in range(4):
+	ETf = pf1[i]*pb1[i] + ETf
+
+EHf = 0
+for i in range(4,6):
+	EHf = pf1[i]*pb1[i] + EHf
+
+EHl = 0 
+for i in range(4,6):
+    EHl = pf2[i]*pb2[i] + EHl
+
+
+ETl = 0 
+for i in range(4):
+	ETl = pf2[i]*pb2[i] + ETl                                                                   
+
+ET = {'ETfair' : ETf/px,'EHfair' : EHf/px, 'ETloaded' : ETl/px, 'EHloaded' : EHl/px}
+print(ET)
+et = {'eTf':ETf/(ETf+EHf), 'eTl': ETl/(ETl+EHl),'eHf': EHf/(EHf+ETf),'eHl': EHl/(EHl+ETl)}
+print(et)
+
+
+
+#eTf = ETf/(ETf+EHf)
+#eHl = EHl/(EHl+ETl)
+#print('eTf')
+#print(eTf)
+#print('eHl')
+#print(eHl)
