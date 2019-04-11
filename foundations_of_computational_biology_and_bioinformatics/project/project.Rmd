@@ -1,0 +1,38 @@
+## fcbb project
+
+```{r message=F}
+#preprocess
+library(tidyverse)
+library(magrittr)
+dat = read.csv('updated_encoding_BLCA.csv',header = 1,row.names = 1)
+b = apply(dat,1,sum)
+a = length(dat[1,])-b
+rawdat = as.data.frame(cbind(a,b) %>% `colnames<-`(c('0','1')))
+```
+
+```{r}
+#mutually co occurrence test
+combinations = combn(1:length(rawdat[,1]),2)
+fisher_results = c()
+chisq_results = c()
+for (i in 1:length(combinations[1,])){
+  id = combinations[,i]
+  ts = rawdat[id,]
+  if (fisher.test(ts)$p>0.05){fisher_results = rbind(fisher_results,row.names(ts))}
+  if (chisq.test(ts,correct = FALSE)$p.value>0.05){chisq_results=rbind(chisq_results,row.names(ts))}
+}
+#mutually exclusive test
+chisq_test_exclusive = function(mtx){
+  # expected = matrix(c(411,0,0,411),2,byrow = T)
+  TS = (mtx[1,1]-mtx[1,1])^2/mtx[1,1] + (mtx[1,2]-(411-mtx[1,1]))^2/(411-mtx[1,1]) + 
+      (mtx[2,1]-(411-mtx[1,1]))^2/(411-mtx[1,1]) +(mtx[2,2]-mtx[1,1])^2/mtx[1,1]
+  return(pchisq(TS,1,lower.tail = FALSE))
+}
+exclusive_results=c()
+for (i in 1:length(combinations[1,])){
+  id = combinations[,i]
+  ts = rawdat[id,]
+  if (chisq_test_exclusive(ts)>0.05){exclusive_results=c(exclusive_results,row.names(ts))}
+}
+```
+
