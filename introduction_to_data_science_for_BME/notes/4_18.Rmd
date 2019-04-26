@@ -1,0 +1,20 @@
+```{r}
+
+data(diamonds)
+fit = lm(price ~ carat + cut + color,data = diamonds)
+summary(fit)
+#8183 increase for a unit change carat holding other variables constant
+
+
+library(tidyverse)
+summary(diamonds$price)
+diamonds = mutate(diamonds,cutPrice = (price > 2400)*1)
+table(diamonds$cutPrice)
+fit = glm(cutPrice ~ carat + color + clarity, data = diamonds, family = binomial())
+summary(fit)
+
+diamonds$cut2 = as.factor(as.character(diamonds$cut))
+fit = lm(price ~ carat + cut2, data = diamonds)
+summary(fit)
+```
+

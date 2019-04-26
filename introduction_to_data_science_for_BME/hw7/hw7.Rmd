@@ -1,0 +1,48 @@
+---
+header-includes: \usepackage{bbm}
+output:
+  html_document:
+    df_print: paged
+---
+
+## Q1
+
+Take the derivative of sum( w * (x - mu) ^ 2 ):
+\begin{align}
+10 * \mu - 2*w*x &= 0 \nonumber \\
+\mu &= 1.77
+\end{align}
+
+## Q2
+
+```{r}
+raw_dat = read.table('shhs1.txt',header = 1)
+raw_dat$log = log(raw_dat$rdi4p + 1)
+fit = lm(log ~ waist + age_s1 + gender + bmi_s1, data = raw_dat)
+summary(fit)
+```
+
+## Q3
+
+\begin{align}
+log(rdi4p + 1) &= 0.007058*waist + 0.019982*age + 0.517821*gender + 0.063068*bmi \nonumber \\
+log(rdi4p + 1) &= 
+\end{align}
+
+## Q4
+
+## Q5
+```{r}
+raw_dat = mutate(raw_dat, cutrdi4p = ((rdi4p<7)*1 + (7<=rdi4p)*1 + (15<=rdi4p)*1 + (30<=rdi4p)*1))
+fit = glm(HTNDerv_s1 ~ cutrdi4p, data = raw_dat, family = binomial())
+summary(fit)
+```
+
+
+
+```{r}
+#age, gender, bmi, waist and smokstat_s1
+fit = glm(HTNDerv_s1 ~ age_s1 + gender + bmi_s1 + waist+ cutrdi4p, data = raw_dat, family = binomial())
+summary(fit)
+```
+

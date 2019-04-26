@@ -1,0 +1,15 @@
+```{r}
+data("diamonds")
+fit = lm(y ~ carat, data = diamonds)
+summary(fit)
+
+fit = lm(y ~ I(carat - mean(carat)), data = diamonds)
+summary(fit)
+
+diamonds$color2 = as.factor(as.character(diamonds$color))
+diamonds$cut2 = as.factor(as.character(diamonds$cut))
+fit2 = lm(price ~ carat + color2 + cut2,data = diamonds)
+summary(fit2)
+
+```
+

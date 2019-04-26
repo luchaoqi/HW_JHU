@@ -1,0 +1,21 @@
+```{r}
+data(swiss)
+y = swiss$Infant.Mortality
+itc = rep(1,length(y))
+x1 = swiss$Fertility
+x2 = swiss$Agriculture
+fit = lm(Infant.Mortality ~ Fertility + Agriculture, data = swiss)
+summary(fit)
+
+
+myresid = function(x,y) y - sum(x*y)/sum(x^2)*x
+y1 = myresid(itc,y)
+x1.1 = myresid(itc,x1)
+x2.1 = myresid(itc,x2)
+y2 = myresid(x1.1,y1)
+x2.2 = myresid(x1.1,x2.1)
+sum(y2*x2.2)/sum(x2.2^2)
+
+
+```
+
