@@ -85,3 +85,44 @@ for(i in 1:length(combinations[1,])){
 
 ```
 
+
+```{r}
+#heatmap
+#fisher
+library(data.table)
+fisher_names = unique(c(fisher_results[,1],fisher_results[,2]))
+fisher_map = melt(setDT(
+  dat[rownames(dat) %in% fisher_names,],
+  keep.rownames = T),'rn')
+ggplot( fisher_map, aes(x = variable,y = factor(rn,levels = unique(rn))) )+
+    geom_tile(aes(fill = value))+
+    scale_fill_gradient(low="grey90", high="red") +
+    labs(x= 'Tumors',y = 'Genes')+
+    theme(
+      # axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        # axis.title.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text.y=element_blank()
+        )
+#chi
+chisq_names = unique(c(chisq_results[,1],chisq_results[,2]))
+chisq_map = melt(setDT(
+  dat[rownames(dat) %in% chisq_names,],
+  keep.rownames = T),'rn')
+ggplot( chisq_map, aes(x = variable,y = factor(rn,levels = unique(rn))) )+
+    geom_tile(aes(fill = value))+
+    scale_fill_gradient(low="grey90", high="red") +
+    labs(x= 'Tumors',y = 'Genes')+
+    theme(
+      # axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        # axis.title.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text.y=element_blank()
+        )
+
+```
+
