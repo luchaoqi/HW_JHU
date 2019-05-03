@@ -24,6 +24,8 @@ summary(fit)
 
 ## Q3
 
+<!-- 1 is male -->
+
 \begin{align}
 log(rdi4p + 1) &= 0.007058*waist + 0.019982*age + 0.517821*gender + 0.063068*bmi \nonumber \\
 log(rdi4p + 1) &= 
@@ -39,6 +41,7 @@ summary(fit)
 ```
 
 
+## Q6
 
 ```{r}
 #age, gender, bmi, waist and smokstat_s1
