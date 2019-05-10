@@ -1,6 +1,7 @@
 ---
 header-includes: \usepackage{bbm}
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 ---
@@ -8,17 +9,16 @@ output:
 ## Q1
 
 Take the derivative of sum( w * (x - mu) ^ 2 ):
-\begin{align}
-10 * \mu - 2*w*x &= 0 \nonumber \\
-\mu &= 1.77
+\begin{align}w\cdot \left( x-mu\right) ^{2} &= 2\left( 1.57-mu\right) ^{2}+2\left( 1.25-mu\right) ^{2} + \left( 2.8-mu\right) ^{2} + \left( 0.43-mu\right) ^{2} \nonumber \\
+\dfrac {dS}{d_{mu}} &= -4(1.57-mu) - 4(1.25-mu) - 2(2.8-mu) - 2(0.43-mu) = 0\nonumber \\
+mu &= 1.48\nonumber
 \end{align}
-
 ## Q2
 
 ```{r}
 raw_dat = read.table('shhs1.txt',header = 1)
-raw_dat$log = log(raw_dat$rdi4p + 1)
-fit = lm(log ~ waist + age_s1 + gender + bmi_s1, data = raw_dat)
+raw_dat$'log(rdi4p + 1)' = log(raw_dat$rdi4p + 1)
+fit = lm(log(rdi4p + 1) ~ waist + age_s1 + gender + bmi_s1, data = raw_dat)
 summary(fit)
 ```
 
@@ -26,18 +26,35 @@ summary(fit)
 
 <!-- 1 is male -->
 
-\begin{align}
-log(rdi4p + 1) &= 0.007058*waist + 0.019982*age + 0.517821*gender + 0.063068*bmi \nonumber \\
-log(rdi4p + 1) &= 
-\end{align}
+```{r}
+newdata = data.frame(waist = 100,age_s1 = 60,bmi_s1 = 30,gender = 1)
+rdi4p = exp(predict(fit,newdata))-1
+rdi4p
+```
+
+
 
 ## Q4
 
+Interpretation:  
+
+\begin{align*}
+log(rdi4p + 1) = -2.281392 + 0.007058waist + 0.019982age +    0.517821gender+0.063068bmi
+\end{align*}  
+
+Coefficient means increase or decrease of log(rdi4p + 1) given one unit change of predictor holding other predictors at a fixed level.
+
 ## Q5
-```{r}
-raw_dat = mutate(raw_dat, cutrdi4p = ((rdi4p<7)*1 + (7<=rdi4p)*1 + (15<=rdi4p)*1 + (30<=rdi4p)*1))
-fit = glm(HTNDerv_s1 ~ cutrdi4p, data = raw_dat, family = binomial())
+```{r message=F}
+library(tidyverse)
+# 0 for rdi4p < 7, 1 for 7 <= rdi4p < 15, 2 for 7 <= rdi4p < 15, 3 for 30 <= rdi4p
+raw_dat2 = mutate(raw_dat, cutrdi4p = ( (7<=rdi4p )*1 + (15<=rdi4p)*1 + (30 <= rdi4p)*1))
+raw_dat2$cutrdi4p = factor(raw_dat2$cutrdi4p)
+# raw_dat3 = model.matrix(~cutrdi4p, data = raw_dat2
+fit = glm(HTNDerv_s1 ~ cutrdi4p , data = raw_dat2, family = binomial())
+# anova(fit)
 summary(fit)
+
 ```
 
 
@@ -45,7 +62,222 @@ summary(fit)
 
 ```{r}
 #age, gender, bmi, waist and smokstat_s1
-fit = glm(HTNDerv_s1 ~ age_s1 + gender + bmi_s1 + waist+ cutrdi4p, data = raw_dat, family = binomial())
+fit = glm(HTNDerv_s1 ~ cutrdi4p + age_s1 + gender + bmi_s1 + waist+  smokstat_s1  ,
+          data = raw_dat2, family = binomial())
+# anova(fit)
 summary(fit)
 ```
+
+Interpretation:  
+
+\begin{align*}
+logit(p) = -5.574954 +0.149463*I(mild sleep apnea) +0.111258*I(sleep apnea) +0.452920*I(severe sleep apnea)\\
++ 0.055657age + 0.012453gender+0.044391bmi+0.004466waist-0.023995smokstat \\
+I(mild sleep apnea) = \begin{cases}1,7 <= rdi4p < 15\\ 0,otherwise\end{cases}\\
+I(sleep apnea) = \begin{cases}1,15 <= rdi4p < 30\\ 0,otherwise\end{cases}\\
+I(severe sleep apnea) = \begin{cases}1,30 <= rdi4p\\ 0,otherwise\end{cases}
+\end{align*}
+
+For categorical variable, coeffients are based on the baseline(Intercept:rdi4p < 7). For continuous predictor, the coeffients represent the change of log odds of probability of being hypertension or not given one unit change of predictor holding other predictors at fixed level.  
+
+
+## Q7 
+
+```{r}
+library(tidyverse)
+library(keras)
+
+dat = read.table("shhs1.txt", header = TRUE)
+
+analyticDat = dat %>%
+  select(rdi4p, waist, COPD15, HTNDerv_s1, gender, age_s1, bmi_s1)%>%
+  # select(rdi4p, waist, smokstat_s1, HTNDerv_s1, gender, age_s1, bmi_s1) %>%
+ na.omit()
+
+
+
+y = log(analyticDat$rdi4p + 1)
+x = analyticDat %>% select(-rdi4p) %>% as.matrix()
+
+trainIdx = sample(c(TRUE, FALSE), length(y), replace = TRUE, prob = c(.7, .3))
+
+ytrain = y[trainIdx]
+xtrain = x[trainIdx, ] %>% scale()
+
+mns = attr(xtrain, "scaled:center")
+sds = attr(xtrain, "scaled:scale")
+
+xtest = x[!trainIdx, ] %>% scale(center = mns, scale = sds)
+ytest = y[!trainIdx]
+
+model = keras_model_sequential() %>%
+ layer_dense(units = 4, activation = "relu",
+             use_bias = TRUE,
+             input_shape = dim(xtrain)[2]) %>%
+ layer_dense(units = 2, activation = "relu") %>%
+ layer_dense(units = 1)
+
+
+model %>% compile(
+ loss = "mse",
+ optimizer = optimizer_rmsprop(),
+ metrics = list("mean_absolute_error")
+)
+
+
+history = model %>% fit(
+ xtrain,
+ ytrain,
+ epochs = 20,
+ validation_split = 0.2,
+ verbose = 1,
+)
+
+## compare with the test data
+yPred = model %>% predict(xtest)
+
+## plot
+plot(yPred[,1], ytest)
+cor(yPred[,1], ytest)
+
+## compare with ordinary regression
+fit = lm(ytrain ~ xtrain)
+yPred2 =  cbind(1, xtest) %*% coef(fit)
+plot(yPred2, ytest)
+cor(yPred2, ytest)
+```
+## Q8
+
+```{r}
+library(tidyverse)
+library(keras)
+
+
+dat = read.table("shhs1.txt", header = TRUE)
+
+analyticDat = dat %>%
+ select(rdi4p, waist, COPD15, HTNDerv_s1, gender, age_s1, bmi_s1) %>%
+ na.omit()
+
+
+
+y = analyticDat$HTNDerv_s1
+y = cbind(y, 1 - y)
+x = analyticDat %>% select(-HTNDerv_s1) %>% as.matrix()
+
+trainIdx = sample(c(TRUE, FALSE), dim(x)[1], replace = TRUE, prob = c(.7, .3))
+
+ytrain = y[trainIdx, ]
+xtrain = x[trainIdx, ] %>% scale()
+
+mns = attr(xtrain, "scaled:center")
+sds = attr(xtrain, "scaled:scale")
+
+xtest = x[!trainIdx, ] %>% scale(center = mns, scale = sds)
+ytest = y[!trainIdx, ]
+
+model = keras_model_sequential() %>%
+ layer_dense(units = 2^8, activation = "relu",
+             use_bias = TRUE,
+             input_shape = dim(xtrain)[2]) %>%
+ layer_dropout(rate = .8) %>%
+ layer_dense(units = 2 ^ 4, activation = "relu") %>%
+ layer_dropout(rate = .8) %>%
+ layer_dense(units = 2, activation = "softmax")
+
+
+model %>% compile(
+ loss = "categorical_crossentropy",
+ optimizer = optimizer_rmsprop(),
+ metrics = list("accuracy")
+)
+
+
+history = model %>% fit(
+ xtrain,
+ ytrain,
+ epochs = 30,
+ validation_split = 0.2,
+ verbose = 1,
+)
+
+## compare with the test data
+
+
+## predict classes gives the index (counting from 0) 
+## of the category. So, it gives 1 for the second column (which is HTN=0)
+## and 0 for the first column (which is HTN=1). So to get it to agree
+## I 1 - the output
+yPred = 1 - (model %>% predict_classes(xtest))
+
+## loot at the comaprison
+ptab = table(yPred, ytest[,1])
+ptab
+## accuracy
+sum(diag(ptab)) / sum(ptab)
+
+
+## compare with ordinary logistic regression
+fit = glm(HTNDerv_s1 ~ ., family = "binomial", data = analyticDat, subset = trainIdx)
+yPred2 =  (predict(fit, analyticDat[!trainIdx,], type = "response") > 0.5) * 1
+ 
+ptab2 = table(yPred2, ytest[,1])
+sum(diag(ptab2)) / sum(ptab2)
+```
+
+
+## Q9
+
+```{r}
+library(keras)
+mnist <- dataset_mnist()
+x_train <- mnist$train$x
+y_train <- mnist$train$y
+x_test <- mnist$test$x
+y_test <- mnist$test$y
+
+
+# reshape
+x_train <- array_reshape(x_train, c(nrow(x_train), 784))
+x_test <- array_reshape(x_test, c(nrow(x_test), 784))
+# rescale
+x_train <- x_train / 255
+x_test <- x_test / 255
+
+y_train <- to_categorical(y_train, 10)
+y_test <- to_categorical(y_test, 10)
+
+
+
+model <- keras_model_sequential() 
+model %>% 
+  layer_dense(units = 256, activation = 'relu', input_shape = c(784)) %>% 
+  layer_dropout(rate = 0.4) %>% 
+  layer_dense(units = 128, activation = 'relu') %>%
+  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = 10, activation = 'softmax')
+
+summary(model)
+
+model %>% compile(
+  loss = 'categorical_crossentropy',
+  optimizer = optimizer_rmsprop(),
+  metrics = c('accuracy')
+)
+
+
+history <- model %>% fit(
+  x_train, y_train, 
+  epochs = 30, batch_size = 128, 
+  validation_split = 0.2
+)
+
+plot(history)
+
+
+model %>% evaluate(x_test, y_test)
+
+model %>% predict_classes(x_test)
+```
+
 
