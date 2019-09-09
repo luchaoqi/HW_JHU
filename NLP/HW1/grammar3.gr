@@ -1,0 +1,77 @@
+
+4	ROOT	S . 	# making . more likely than the other two sentence endings
+2	ROOT	S ! 	# making ! more likely than 'is it true that...'
+1	ROOT	is it true that S ?     # mixing terminals and nonterminals is ok.
+
+1	S 	NP VP 				# Most common sentence structure should be NP VP
+.33 	S 	NP thought that S 	# less common for this
+.33 	S 	it WV NP that S 	# less common for this
+.15 	S 	that S WV NP 	# less common so less 'that that that' sentences
+
+
+1 	NP 	Det Noun 	# make non names and regular nouns equally likely
+1 	NP 	Name
+.2 	NP NP CJ NP 	# make conjoined NPs less common
+.2	NP 	NP PP 		# make the double recursive pattern less common
+
+1 	VP 	TV NP 		# most common verb phrases should be transitive
+.2 	VP 	TV CJ TV NP # verb conjuctions should be quite rare
+.3 	VP 	IV 			# Intransitive verbs should occur less frequently
+3 	VP 	IV PP 		# Can also end in prepositional phrase 
+
+1 	PP 	Prep NP 	# There is no other pattern for prepositional phrases
+
+1 	Det the 		# All determininers occur with equal frequency
+1 	Det a
+.3 	Det every
+
+1 	CJ 	and 		# and is more common than or for conjuctions
+.5 	CJ 	or
+
+1 	WV 	perplexed 	# I call these weird verbs, when they can come before a NP
+1 	WV 	bothered
+1 	WV 	intrigued
+
+3 	Noun 	Adj Noun 	# should be more frequent for more adjectives
+1 	Noun	president	# The rest are equally likely nouns
+1	Noun	sandwich
+1	Noun	pickle
+1	Noun	chief of staff
+1	Noun	floor
+1 	Noun 	desk
+1 	Noun 	proposal
+
+1 	Adj green 			# all nouns are equally likely
+1 	Adj red
+1	Adj	fine
+1	Adj	delicious
+1	Adj	perplexed
+1	Adj	pickled
+1 	Adj very Adj 		# very modifies other adjectives
+
+1 	TV 	pickled 		# All transitive verbs are equally likely
+1 	TV 	ate
+1	TV	kissed
+1	TV	wanted
+1	TV	understood
+1 	TV 	worked
+
+
+1 	IV 	thought 		# All intrans verbs are equally likely
+1 	IV 	sighed
+1 	IV 	jumped
+1 	IV 	worked
+
+
+1 	Prep 	near 		# All prep. are equally likely
+1	Prep	with
+1	Prep	on
+1	Prep	under
+1	Prep	in
+
+1 	Name 	Manyu 		# All names are equally likely
+1 	Name 	Sally
+1 	Name 	Rick
+1 	Name 	Naina
+
+
