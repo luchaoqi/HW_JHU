@@ -3,10 +3,10 @@ title: "hw3"
 author: "LuchaoQi"
 date: "February 26, 2019"
 output:
+  pdf_document: default
+  html_document: default
   md_document: 
     variant: markdown_github
-  html_document: default
-  pdf_document: default
 ---
 
 ```{r warning=FALSE,message = F}
