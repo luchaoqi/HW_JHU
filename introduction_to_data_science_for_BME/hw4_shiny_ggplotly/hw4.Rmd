@@ -1,0 +1,74 @@
+---
+title: "hw4"
+author: "LuchaoQi"
+date: "March 7, 2019"
+output: html_document
+---
+
+```{r warning=FALSE,message = F}
+library(magrittr); library(dplyr); library(MRIcloudT1volumetrics);library('tidyr');library(ggplot2);library(plotly)
+```
+
+## Q2
+
+```{r}
+dat = read.table('https://raw.githubusercontent.com/bcaffo/ds4bme/master/data/classInterests.txt',
+                 header = 1)
+p1 = plot_ly(dat, x = ~Year) %>% add_histogram(name = ~'Year')
+p2 = plot_ly(dat, x = ~Program)  %>% add_histogram(name = ~'Program')
+subplot(p1, p2)
+```
+
+
+
+## Q3 
+
+
+```{r}
+library(ggmosaic)
+dat = read.table('https://raw.githubusercontent.com/bcaffo/ds4bme/master/data/classInterests.txt'
+                 ,header = 1)
+g = ggplot(data = dat) +
+  geom_mosaic(aes(x = product(Year,Program), fill=Year), na.rm=TRUE) +
+  labs(x="Program", y = "Year",title='Class Data') +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+ggplotly(g)
+
+```
+
+
+
+
+## Q5  
+
+```{r}
+dat = read.csv('https://raw.githubusercontent.com/jhu-advdatasci/2018/master/data/KFF/healthcare-spending.csv',skip = 2,header = 1)[2:52,]
+colnames(dat)[-1] = c(1991:2014)
+dat = gather(dat,key = Year, value = Spending, 2:25) 
+g = ggplot(dat, aes(x=Year,y=Spending,col=Location,group = Location)) + 
+  geom_line()+
+  theme(axis.text.x = element_text(angle = 90,vjust=0))
+ggplotly(g)
+```
+
+
+
+
+
+
+
+
+## Q6  
+
+
+
+```{r}
+dat = read.csv('https://raw.githubusercontent.com/jhu-advdatasci/2018/master/data/KFF/healthcare-spending.csv',skip = 2,header = 1)[2:52,]
+dat = mutate(dat,Spending = apply(dat[-1],1,mean)) %>% select(Location,Spending)
+g = ggplot(dat,aes(x=Location,y = Spending)) + 
+  geom_bar(stat = "identity")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust = 0))+
+  labs(x = "States")
+ggplotly(g)
+```
+

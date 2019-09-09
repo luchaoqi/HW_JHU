@@ -1,0 +1,12 @@
+name: test
+title:
+username:
+account: luchao-qi
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 772100
+bundleId: 1921706
+url: https://luchao-qi.shinyapps.io/test/
+when: 1551943144.45173
+asMultiple: FALSE
+asStatic: FALSE
