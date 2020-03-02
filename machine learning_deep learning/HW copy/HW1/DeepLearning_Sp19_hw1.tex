@@ -1,0 +1,106 @@
+\documentclass[a4paper]{article}
+
+%% Language and font encodings
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+
+%% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+%% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\allowdisplaybreaks
+\newcommand{\dee}[2]{\frac{\partial{#1}}{\partial{#2}}}
+\newcommand{\answer}{\textbf{\color{blue}Answer:}}
+\usepackage{pythonhighlight}
+\usepackage{bm}
+\usepackage{amssymb}
+
+\title{Homework 1\\
+600.482/682 Deep Learning\\
+Spring 2019}
+
+\author{\bf{}}
+
+\begin{document}
+\maketitle
+
+\centering{
+\textbf{Due Mon 2/18 11:59pm.\\
+Please type your answers inline of the LaTeX file \\
+Submit PDF to Gradescope with entry code MYRR74}}\\
+
+\vspace{5mm}
+
+\begin{enumerate}
+% Problem 1
+\item	A doctor and a resident are reading scans and classifying tumors. Given 10 scans, the doctor classifies 9 of them correctly, while the resident classifies 6 correctly. 
+
+\begin{enumerate}
+	\item	Give the formula for probability and odds. Explain their difference. 
+	
+	\item What is the odds of the doctor reading the scan correctly? What is the odds of the resident? What is the odds ratio of the doctor reading the scan correctly compared to the resident?
+	
+	\item What is a logit and how can it be used to derive a linear model to express the exponent of odds?
+	
+	\item Using the model, what is the odds ratio of making a correct reading as a doctor compared to a resident?
+	
+	\item Given the previous odds ratio, derive the probability expressing how much more likely the doctor is to make the correct classification compared to the resident. 
+\end{enumerate}
+
+% Problem 2
+\item Problems for the maximum likelihood estimate and the maximum a posteriori estimate:
+\begin{enumerate}
+\item Assume $p(y \mid x) = N(ax, s^2)$, where all quantities are scalars and where $a$ and $s$ are known constants. You observe $y_1$, $\ldots$, $y_N$. Derive the maximum likelihood estimate  (MLE) of $x$.\\
+
+\item Assume $p(y \mid x) = N(ax, s^2)$, where all quantities are scalars, $a$ and $s$ are known constants, and the prior distribution over $x$ is $N(m,r^2)$, where $m$ and $r$ are known constants. The {\it maximum a posteriori (MAP)} estimate is the value of $x$ that maximizes $P(x | y) = P( y | x) P(x)/P(y).$ You observe $y_1$, $\ldots$, $y_N$. Derive the maximum a posteriori estimate of $x$.\\
+
+\item Assume that $a = 2$, $s = 3$, $m = 1$, and $r = 0.5$, and that you observed $y$ values of -0.85, 0.68, -1.26, 2.36, 1.27, -3.49, -0.54, and 0.12. What are the maximum likelihood and maximum a posteriori estimates of $x$? Explain the difference you observe between $x_{MLE}$ and $x_{MAP}$? 
+
+\end{enumerate}
+
+% Problem 3
+\item Recall in class, we learned the form of a linear classifier as $f(\bm{x}; \bm{W}) =  \bm{W}\bm{x}+\bm{b}$. In order to learn the parameters, we need to perform error-backpropagation, a way to compute partial derivatives (or gradients) w.r.t. the parameters of a neural network. Here, we are interested in the derivative of the softmax loss for a multinomial classification problem. \\
+Let's first define the notations:
+\begin{align*}
+	\text{input features}: & \quad \bm{x} \in \mathbb{R}^D.\\
+	\text{target labels}: & \quad \bm{y} \in \mathbb{R}^K.\\
+	\text{multinomial linear classifier}: & \quad \bm{f} = \bm{W}\bm{x} + \bm{b}, \quad \bm{W} \in \mathbb{R}^{K \times D}\ \text{and}\ \bm{f}, \bm{b} \in \mathbb{R}^K\\
+	\text{e.g., for the k-th classification}: & \quad f_k = \bm{w}_k^T \bm{x} + b_k, \text{ corresponding to } y_k,\\
+								&\quad \text{where } \bm{w}^T_k \text{ is the k-th row of } \bm{W}, k \in \{1...K\}  
+\end{align*}
+\begin{enumerate}
+	\item Please express the softmax loss of logistic regression, $L(\bm{x}, \bm{W}, \bm{b}, y)$ using the above notations.
+	\item Please calculate its derivative Jacobian $\frac{\partial L}{\partial \bm{w}_k}$.
+\end{enumerate}
+
+% Problem 4
+\item Direction of KL divergence. In many real-world applications, we often don't have full observation of the target distribution. Then it is important to determine the direction of KL divergence when choosing it as an objective function. Here, we want to show the difference of KL divergence directions by calculating the gradient. 
+
+\begin{enumerate}
+	\item Show that KL divergence is asymmetric using the following example. We define a discrete random variable $X$. Now consider the case that we have two sampling distribution $P(x)$ and $Q(x)$, which we present as two hard encoded vector:
+	\begin{align*}
+		P(x) & = [1,\ 6,\ 12,\ 5,\ 2,\ 8,\ 12,\ 4]\\
+		Q(x) & = [1,\ 3,\ 6,\ 8,\ 15,\ 10,\ 5,\ 2]
+	\end{align*}
+	Please compute 1) discrete probability distribution, $p(x)$ and $q(x)$. (hint: calculate the normalization). 2) two directions of KL divergence, \textbf{KL}$(p||q)$ and \textbf{KL}$(q||p)$.
+	\item Next, we try to optimize a model to fit the target distribution. We hope to pay attention to the issue of normalization and see what elements are involved in each direction.\\
+	Note that $p$ and $q_{\theta}$ are probability distributions. To simplify expression, $p(d)$ and $q(d)$ are all discrete variables, where $p(d)= P(d)/Z_p$, $Z_p$ is normalization factor. $p(d)$ is regarded as the target distribution, and we optimize $\theta$ to fit model distribution $q_{\theta}(d)$ to $p(d)$. Please express \textbf{KL}$(q_{\theta}||p)$ and  \textbf{KL}$(p||q_{\theta})$ as optimization objective functions. (hint: remove all constant items that are not related to the optimization process)\\
+	
+	\item Can you tell which direction is easier for computation? Why? Then please calculate the gradient of \textbf{KL}$(q_{\theta}||p)$ and  \textbf{KL}$(p||q_{\theta})$ w.r.t. $q_{\theta}(d)$ using the results in (b).
+
+\end{enumerate}
+
+% Problem 5
+\item In this problem, you are provided an opportunity to perform hands-on calculation of the SVM loss and softmax loss we learned in class.\\
+We define a model of Linear Classifier: $$f(\bm{x}, \bm{W}) = \bm{W}\bm{x}+\bm{b}$$ Giving a data sample: $$\bm{x}_i = \begin{bmatrix}-15\\ 22\\ -44\\ 56 \end{bmatrix},\ y_i=2$$ At one iteration, we have $$\bm{W}=\begin{bmatrix}0.01,\ -0.05,\ 0.1,\ 0.05\\ 0.7,\ 0.2,\ 0.05,\ 0.16\\0.0,\ -0.45,\ -0.2,\ 0.03\end{bmatrix}, \bm{b}=\begin{bmatrix}0.0\\ 0.2\\ -0.3\end{bmatrix}$$\\
+Please calculate 1) SVM Loss (hinge loss) and 2) softmax loss (cross-entropy loss) of this sample point.
+
+\end{enumerate}
+
+\end{document}
