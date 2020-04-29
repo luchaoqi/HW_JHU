@@ -1,1 +1,1 @@
-Project has been uploaded to gdrive
+Project has been uploaded to gdrive/github
